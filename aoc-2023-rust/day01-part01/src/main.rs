@@ -6,6 +6,7 @@ fn main() {
     let mut s: u32 = 0;
     let mut e: u32 = 0;
     let mut n: u32 = 0;
+
     for line in stdin.lock().lines() {
         for ch in line.as_ref().unwrap().chars() {
             if ch.is_digit(10) {
@@ -20,7 +21,9 @@ fn main() {
                 break;
             }
         }
+
         n = n + s * 10 + e;
     }
+
     println!("{}", n);
 }
