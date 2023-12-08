@@ -1,0 +1,2 @@
+#!/bin/bash
+cargo run -p day01-part01 < /home/morfanos/Github/advent-of-code/aoc-2023-rust/day01-part01/resources/input-test
