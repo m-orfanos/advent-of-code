@@ -1,0 +1,12 @@
+[package]
+name = "aoc-2023-rust"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [
+  "day01-part01",
+  "day01-part02",
+  "cli",
+  "shared",
+]
