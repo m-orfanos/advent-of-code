@@ -28,5 +28,5 @@ $ ./aoc <DAY> <PART>
 ````
 
 > [!warning]
-> The <DAY> is TWO digits 01, 02, ..., 25
-> The <PART> is TWO digits 01 or 02
+> The `<DAY>` is TWO digits 01, 02, ..., 25
+> The `<PART>` is TWO digits 01 or 02
