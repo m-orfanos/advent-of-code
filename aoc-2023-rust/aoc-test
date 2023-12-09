@@ -1,0 +1,5 @@
+#!/bin/bash
+DAY="day$1"
+PART="part$2"
+PUZZLE="$DAY-$PART"
+cargo run -p $PUZZLE < /home/morfanos/Github/advent-of-code/aoc-2023-rust/$PUZZLE/resources/input-test
