@@ -7,6 +7,4 @@ edition = "2021"
 members = [
   "day01-part01",
   "day01-part02",
-  "cli",
-  "shared",
 ]
