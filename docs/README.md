@@ -1,4 +1,4 @@
-# README
+# Advent of Code notes
 
 This directory contains notes I took while solving puzzles.
 
