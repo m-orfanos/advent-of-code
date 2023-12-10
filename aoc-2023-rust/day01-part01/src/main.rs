@@ -1,24 +1,16 @@
 use std::io::{self, BufRead};
 
 fn main() {
-    let stdin = io::stdin();
-
     let mut ans: u32 = 0;
+    for line_res in io::stdin().lock().lines() {
+        let line = line_res.unwrap();
 
-    for line_res in stdin.lock().lines() {
-        let calibration_value = match line_res {
-            Ok(line) => {
-                let s = find_digit(&line);
-                let e = rfind_digit(&line);
+        let s = find_digit(&line);
+        let e = rfind_digit(&line);
 
-                // build the number
-                // s/e will always be single digit numbers
-                s * 10 + e
-            }
-            // should never happen
-            Err(e) => panic!("{:?}", e),
-        };
-        ans += calibration_value;
+        // build the number
+        // s/e will always be single digit numbers
+        ans += s * 10 + e
     }
 
     println!("{}", ans);
