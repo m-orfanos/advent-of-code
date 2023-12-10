@@ -10,7 +10,7 @@ fn main() {
 
     #[derive(Debug)]
     struct Symbol {
-        // ch: char, // might be useful in part 2
+        // ch: char, // might be useful in part 2, it was not
         row: i32,
         col: usize,
     }
@@ -54,8 +54,8 @@ fn main() {
                         }
                         is_parsing_digits = false;
                         match ch {
-                            '.' => (),
-                            _ => symbols.push(Symbol { row, col }),
+                            '*' => symbols.push(Symbol { row, col }),
+                            _ => (),
                         }
                     }
                 }
@@ -73,37 +73,45 @@ fn main() {
         }
     }
 
-    // calculate sum of part numbers near symbols
+    // calculate sum of gear ratios
     let mut ans = 0;
 
-    for EnginePart {
-        number: pnumber,
-        row: prow,
-        cols: pcols,
-    } in parts
+    for Symbol {
+        // ch: _,
+        row: srow,
+        col: scol,
+    } in symbols
     {
-        for Symbol {
-            // ch: _,
-            row: srow,
-            col: scol,
-        } in &symbols
+        let mut gear_ratio = 1;
+        let mut cnt = 0;
+
+        for EnginePart {
+            number: pnumber,
+            row: prow,
+            cols: pcols,
+        } in &parts
         {
-            if *srow < prow - 1 {
+            if srow < *prow - 1 {
                 // symbol is at least 2 rows above part
-                continue;
-            }
-            if *srow > prow + 1 {
-                // symbol is at least 2 rows below part
-                // no remaining symbols near part
+                // no remaining parts near symbol
                 break;
             }
-            for pcol in &pcols {
+            if srow > *prow + 1 {
+                // symbol is at least 2 rows below part
+                continue;
+            }
+            for pcol in pcols {
                 if scol - 1 <= *pcol && *pcol <= scol + 1 {
-                    // symbol is adjacent to part
-                    ans += pnumber;
+                    // part is adjacent to symbol
+                    cnt += 1;
+                    gear_ratio *= pnumber;
                     break;
                 }
             }
+        }
+
+        if cnt > 1 {
+            ans += gear_ratio;
         }
     }
 
