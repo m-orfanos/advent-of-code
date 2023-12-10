@@ -3,27 +3,42 @@ use std::io::{self, BufRead};
 fn main() {
     let stdin = io::stdin();
 
-    let mut s: u32 = 0;
-    let mut e: u32 = 0;
-    let mut n: u32 = 0;
+    let mut ans: u32 = 0;
 
-    for line in stdin.lock().lines() {
-        for ch in line.as_ref().unwrap().chars() {
-            if ch.is_digit(10) {
-                s = ch.to_digit(10).unwrap();
-                break;
+    for line_res in stdin.lock().lines() {
+        let calibration_value = match line_res {
+            Ok(line) => {
+                let s = find_digit(&line);
+                let e = rfind_digit(&line);
+
+                // build the number
+                // s/e will always be single digit numbers
+                s * 10 + e
             }
-        }
-
-        for ch in line.unwrap().chars().rev() {
-            if ch.is_digit(10) {
-                e = ch.to_digit(10).unwrap();
-                break;
-            }
-        }
-
-        n = n + s * 10 + e;
+            // should never happen
+            Err(e) => panic!("{:?}", e),
+        };
+        ans += calibration_value;
     }
 
-    println!("{}", n);
+    println!("{}", ans);
+}
+
+fn find_digit(line: &String) -> u32 {
+    // using unwrap because there will ALWAYS be a value present
+    line.chars()
+        .find(|ch| ch.is_digit(10))
+        .map(|ch| ch.to_digit(10))
+        .unwrap()
+        .unwrap()
+}
+
+fn rfind_digit(line: &String) -> u32 {
+    // using unwrap because there will ALWAYS be a value present
+    line.chars()
+        .rev()
+        .find(|ch| ch.is_digit(10))
+        .map(|ch| ch.to_digit(10))
+        .unwrap()
+        .unwrap()
 }
