@@ -1,4 +1,4 @@
-# Advent of Code notes
+# Advent of Code notebook
 
 This directory contains notes I took while solving puzzles.
 
