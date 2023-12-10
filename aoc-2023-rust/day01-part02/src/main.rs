@@ -53,14 +53,16 @@ fn main() {
     let mut n = 0;
     for line in stdin.lock().lines() {
         let haystack = line.as_ref().unwrap();
-        let (_, digit_start) = find_forward(&word_digits, haystack);
-        let (_, digit_end) = find_backward(&word_digits, haystack);
-        n = n + digit_start * 10 + digit_end;
+
+        let first = find_forward(&word_digits, haystack);
+        let last = find_backward(&word_digits, haystack);
+
+        n += first * 10 + last;
     }
     println!("{}", n);
 }
 
-fn find_forward(word_digits: &[WordDigit], haystack: &String) -> (usize, i32) {
+fn find_forward(word_digits: &[WordDigit], haystack: &String) -> i32 {
     let mut idx = usize::MAX;
     let mut n = -1;
 
@@ -68,10 +70,10 @@ fn find_forward(word_digits: &[WordDigit], haystack: &String) -> (usize, i32) {
     for word_digit in word_digits {
         let needle = word_digit.word;
         match haystack.find(needle) {
-            Some(current_idx) => {
-                if current_idx < idx {
+            Some(match_idx) => {
+                if match_idx < idx {
                     // update only when a better match is found
-                    idx = current_idx;
+                    idx = match_idx;
                     n = word_digit.digit;
                 }
             }
@@ -82,19 +84,19 @@ fn find_forward(word_digits: &[WordDigit], haystack: &String) -> (usize, i32) {
     // iterate over haystack searching for digits (0, 1, 2, ..., 9)
     for (current_idx, current_ch) in haystack.char_indices() {
         if current_idx > idx {
+            // already found a better match
             break;
         }
         if current_ch.is_digit(10) {
-            // already found a better match
             idx = current_idx;
             n = current_ch.to_digit(10).unwrap() as i32;
         }
     }
 
-    (idx, n)
+    n
 }
 
-fn find_backward(word_digits: &[WordDigit], haystack: &String) -> (usize, i32) {
+fn find_backward(word_digits: &[WordDigit], haystack: &String) -> i32 {
     let mut idx = usize::MIN;
     let mut n = -1;
 
@@ -125,5 +127,5 @@ fn find_backward(word_digits: &[WordDigit], haystack: &String) -> (usize, i32) {
         }
     }
 
-    (idx, n)
+    n
 }
