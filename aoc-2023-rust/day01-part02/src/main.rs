@@ -61,61 +61,69 @@ fn main() {
 }
 
 fn find_forward(word_digits: &[WordDigit], haystack: &String) -> (usize, i32) {
-    let mut line_idx = usize::MAX;
-    let mut line_digit = -1;
+    let mut idx = usize::MAX;
+    let mut n = -1;
 
+    // search for digits as words (zero, one, two, ..., nine)
     for word_digit in word_digits {
         let needle = word_digit.word;
         match haystack.find(needle) {
             Some(current_idx) => {
-                if current_idx < line_idx {
-                    line_idx = current_idx;
-                    line_digit = word_digit.digit;
+                if current_idx < idx {
+                    // update only when a better match is found
+                    idx = current_idx;
+                    n = word_digit.digit;
                 }
             }
             None => (),
         }
     }
 
+    // iterate over haystack searching for digits (0, 1, 2, ..., 9)
     for (current_idx, current_ch) in haystack.char_indices() {
-        if current_idx > line_idx {
+        if current_idx > idx {
             break;
         }
         if current_ch.is_digit(10) {
-            line_idx = current_idx;
-            line_digit = current_ch.to_digit(10).unwrap() as i32;
+            // already found a better match
+            idx = current_idx;
+            n = current_ch.to_digit(10).unwrap() as i32;
         }
     }
 
-    (line_idx, line_digit)
+    (idx, n)
 }
 
 fn find_backward(word_digits: &[WordDigit], haystack: &String) -> (usize, i32) {
-    let mut line_idx = usize::MIN;
-    let mut line_digit = -1;
+    let mut idx = usize::MIN;
+    let mut n = -1;
 
+    // search for digits as words (zero, one, two, ..., nine) wrt the end
     for word_digit in word_digits {
         let needle = word_digit.word;
         match haystack.rfind(needle) {
-            Some(current_idx) => {
-                if current_idx > line_idx {
-                    line_idx = current_idx;
-                    line_digit = word_digit.digit;
+            Some(match_idx) => {
+                if match_idx > idx {
+                    // update only when a better match is found
+                    idx = match_idx;
+                    n = word_digit.digit;
                 }
             }
             None => (),
         }
     }
 
+    // iterate over haystack in reverse searching for digits (0, 1, 2, ..., 9)
     for (current_idx, current_ch) in haystack.char_indices().rev() {
-        if current_idx < line_idx {
+        if current_idx < idx {
+            // already found a better match
             break;
         }
         if current_ch.is_digit(10) {
-            line_idx = current_idx;
-            line_digit = current_ch.to_digit(10).unwrap() as i32;
+            idx = current_idx;
+            n = current_ch.to_digit(10).unwrap() as i32;
         }
     }
 
-    (line_idx, line_digit)
+    (idx, n)
 }
