@@ -3,10 +3,6 @@
 This directory contains notes I took while solving puzzles.
 
 ```text
-├── backup
-│   ├── Day 01 Trebuchet - backup.md
-│   ├── Day 02 Cube Conundrum - backup.md
-│   ├── ...
 ├── journal
 │   ├── 2023-12-08.md
 │   ├── 2023-12-09.md
@@ -24,8 +20,6 @@ This directory contains notes I took while solving puzzles.
     └── ...
 ```
 
-- `backup`
-	- each file is a copy of the problem statement, taken directory from the AoC website
 - `journal` 
 	- each file acts as a scratchpad, somewhere to take notes as puzzles are solved
 - `puzzles` 
