@@ -56,9 +56,7 @@ fn main() {
     }
 
     let mut ans = 0;
-
-    let stdin = io::stdin();
-    for line in stdin.lock().lines() {
+    for line in io::stdin().lock().lines() {
         let haystack = line.unwrap();
 
         // parse the words

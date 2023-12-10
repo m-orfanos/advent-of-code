@@ -5,40 +5,52 @@ use std::{
 
 fn main() {
     let colours_map = HashMap::from([("red", 12), ("green", 13), ("blue", 14)]);
+
     let mut sum_ids = 0;
-    for input_res in io::stdin().lock().lines() {
-        match input_res {
-            Ok(input) => {
-                let game_rounds: Vec<&str> = input.trim().split(":").map(|x| x.trim()).collect();
+    for line_res in io::stdin().lock().lines() {
+        let line = line_res.unwrap();
 
-                let game: Vec<&str> = game_rounds[0].split(" ").map(|x| x.trim()).collect();
-                let game_id = i32::from_str_radix(game[1], 10).unwrap();
+        // parse line, format
+        // Game x: n1 colour1, n2 colour2; m1 colour2, m2 colour3; ...
+        let game_rounds = line
+            .trim()
+            .split(":")
+            .map(|x| x.trim())
+            .collect::<Vec<&str>>();
 
-                let mut is_possible = true;
+        // parse Game, format
+        // Game x
+        let game = game_rounds[0]
+            .split(" ")
+            .map(|x| x.trim())
+            .collect::<Vec<&str>>();
+        let game_id = i32::from_str_radix(game[1], 10).unwrap();
 
-                for round_str in game_rounds[1].split(";").map(|x| x.trim()) {
-                    for set_str in round_str.split(",").map(|x| x.trim()) {
-                        let set = set_str.split(" ").map(|x| x.trim()).collect::<Vec<&str>>();
-                        let n = i32::from_str_radix(set[0], 10).unwrap();
-                        let colour = set[1];
-                        if n > colours_map[colour] {
-                            is_possible = false;
-                            break;
-                        }
-                    }
-
-                    if !is_possible {
-                        break;
-                    }
-                }
-
-                if is_possible {
-                    sum_ids += game_id;
+        // parse rounds, format
+        // n1 colour1, n2 colour2; m1 colour2, m2 colour3; ...
+        let mut is_possible = true;
+        for round_str in game_rounds[1].split(";").map(|x| x.trim()) {
+            // parse round, format
+            // n1 colour1, n2 colour2, ...
+            for set_str in round_str.split(",").map(|x| x.trim()) {
+                // parse set, format
+                // n1 colour1
+                let set = set_str.split(" ").map(|x| x.trim()).collect::<Vec<&str>>();
+                let n = i32::from_str_radix(set[0], 10).unwrap();
+                let colour = set[1];
+                if n > colours_map[colour] {
+                    is_possible = false;
+                    break;
                 }
             }
-            Err(e) => {
-                panic!("{:?}", e);
+
+            if !is_possible {
+                break;
             }
+        }
+
+        if is_possible {
+            sum_ids += game_id;
         }
     }
 
