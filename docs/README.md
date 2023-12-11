@@ -27,6 +27,7 @@ This directory contains notes I took while solving puzzles.
 - `templates`
 	- files used as a base when creating new notes
 - `wiki`
-	- each file attempts to solve on a specific task, these tasks are typically glued together to solve a puzzle
+	- each file attempts to solve on a generic task; these tasks are typically glued together to solve a puzzle
 
-The docs are stuctured this way because I take notes using [obsidian](https://obsidian.md/), which helps me streamline everything.
+> [!warning]
+> These notes are NOT an attempt to outline each puzzle and the approach taken to solve it, and especially not a comprehensive tutorial. I do not expect anyone else to get any value from these notes. They exist to keep me organized and provide a historical log.
