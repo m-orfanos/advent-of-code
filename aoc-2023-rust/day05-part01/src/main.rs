@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    io::{self, BufRead},
-};
+use std::io::{self, BufRead};
 
 enum ParseMode {
     Seeds,
@@ -15,15 +12,22 @@ enum ParseMode {
     Pending,
 }
 
+struct Config {
+    src: u64,
+    dst: u64,
+    distance: u64,
+}
+
 fn main() {
     let mut seeds: Vec<u64> = Vec::new();
-    let mut seed_to_soil: HashMap<u64, u64> = HashMap::new();
-    let mut soil_to_fert: HashMap<u64, u64> = HashMap::new();
-    let mut fert_to_water: HashMap<u64, u64> = HashMap::new();
-    let mut water_to_light: HashMap<u64, u64> = HashMap::new();
-    let mut light_to_temp: HashMap<u64, u64> = HashMap::new();
-    let mut temp_to_hum: HashMap<u64, u64> = HashMap::new();
-    let mut hum_to_loc: HashMap<u64, u64> = HashMap::new();
+
+    let mut seed_to_soil: Vec<Config> = vec![];
+    let mut soil_to_fert: Vec<Config> = vec![];
+    let mut fert_to_water: Vec<Config> = vec![];
+    let mut water_to_light: Vec<Config> = vec![];
+    let mut light_to_temp: Vec<Config> = vec![];
+    let mut temp_to_hum: Vec<Config> = vec![];
+    let mut hum_to_loc: Vec<Config> = vec![];
 
     let mut mode = ParseMode::Seeds;
 
@@ -31,8 +35,9 @@ fn main() {
         let line = line_res.unwrap();
 
         if line.is_empty() {
+            // reached the end of the current config
+            // reset mode
             mode = ParseMode::Pending;
-            println!("DONE PARSING");
             continue;
         }
 
@@ -43,13 +48,19 @@ fn main() {
                 seeds = parse_arr(parts[1]);
                 mode = ParseMode::Pending;
             }
-            ParseMode::SeedToSoil => extend_map(&mut seed_to_soil, parse_arr(&line)),
-            ParseMode::SoilToFertilizer => extend_map(&mut soil_to_fert, parse_arr(&line)),
-            ParseMode::FertilizerToWater => extend_map(&mut fert_to_water, parse_arr(&line)),
-            ParseMode::WaterToLight => extend_map(&mut water_to_light, parse_arr(&line)),
-            ParseMode::LightToTemperature => extend_map(&mut light_to_temp, parse_arr(&line)),
-            ParseMode::TemperatureToHumidity => extend_map(&mut temp_to_hum, parse_arr(&line)),
-            ParseMode::HumitityToLocation => extend_map(&mut hum_to_loc, parse_arr(&line)),
+            // config format
+            // seed-to-soil map:
+            // 50 98 2
+            // 52 50 48
+            ParseMode::SeedToSoil => extend_cfg(&mut seed_to_soil, parse_arr(&line)),
+            ParseMode::SoilToFertilizer => extend_cfg(&mut soil_to_fert, parse_arr(&line)),
+            ParseMode::FertilizerToWater => extend_cfg(&mut fert_to_water, parse_arr(&line)),
+            ParseMode::WaterToLight => extend_cfg(&mut water_to_light, parse_arr(&line)),
+            ParseMode::LightToTemperature => extend_cfg(&mut light_to_temp, parse_arr(&line)),
+            ParseMode::TemperatureToHumidity => extend_cfg(&mut temp_to_hum, parse_arr(&line)),
+            ParseMode::HumitityToLocation => extend_cfg(&mut hum_to_loc, parse_arr(&line)),
+            // determine what should be parsed next
+            // empty lines are ignored
             ParseMode::Pending => {
                 if line.is_empty() {
                     mode = ParseMode::Pending;
@@ -76,58 +87,58 @@ fn main() {
         }
     }
 
-    println!("DONE PARSING");
-
     let mut ans = u64::MAX;
     for seed in seeds {
-        let soil = seed_to_soil.get(&seed).or(Some(&seed)).unwrap();
-        let fert = soil_to_fert.get(&soil).or(Some(&soil)).unwrap();
-        let water = fert_to_water.get(&fert).or(Some(&fert)).unwrap();
-        let light = water_to_light.get(&water).or(Some(&water)).unwrap();
-        let temp = light_to_temp.get(&light).or(Some(&light)).unwrap();
-        let humidity = temp_to_hum.get(&temp).or(Some(&temp)).unwrap();
-        let location = hum_to_loc.get(&humidity).or(Some(&humidity)).unwrap();
+        let soil = find_next(seed, &seed_to_soil);
+        let fert = find_next(soil, &soil_to_fert);
+        let water = find_next(fert, &fert_to_water);
+        let light = find_next(water, &water_to_light);
+        let temp = find_next(light, &light_to_temp);
+        let hum = find_next(temp, &temp_to_hum);
+        let loc = find_next(hum, &hum_to_loc);
 
-        if *location < ans {
-            ans = *location;
+        if loc < ans {
+            ans = loc;
         }
     }
 
     println!("{}", ans);
 }
 
-fn extend_map(map: &mut HashMap<u64, u64>, config: Vec<u64>) {
-    // seed-to-soil map:
-    // 50 98 2
-    // 52 50 48
-    let dst_start = config[0];
-    let src_start = config[1];
-    let range_length = config[2];
+fn find_next(seed: u64, cx: &Vec<Config>) -> u64 {
+    let mut needle = seed;
 
-    // seed  soil
-    // 0     0
-    // 1     1
-    // ...   ...
-    // 48    48
-    // 49    49
-    // 50    52
-    // 51    53
-    // ...   ...
-    // 96    98
-    // 97    99
-    // 98    50
-    // 99    51
-    for i in 0..range_length {
-        let src = src_start + i;
-        let dst = dst_start + i;
-        map.insert(src, dst);
+    for c in cx {
+        if needle < c.src {
+            continue;
+        }
+
+        if c.src <= needle && needle <= c.src + c.distance {
+            needle = c.dst + (needle - c.src);
+            break;
+        }
     }
+
+    needle
 }
 
+fn extend_cfg(map: &mut Vec<Config>, config: Vec<u64>) {
+    map.push(Config {
+        src: config[1],
+        dst: config[0],
+        distance: config[2],
+    });
+}
+
+// formats
+// seeds: 79 14 55 13
+// seed-to-soil map:
 fn parse_heading(s: &String) -> Vec<&str> {
     s.split(":").map(|x| x.trim()).collect::<Vec<&str>>()
 }
 
+// format
+// 79 14 55 13
 fn parse_arr(s: &str) -> Vec<u64> {
     s.split(" ")
         .map(|x| x.trim())
