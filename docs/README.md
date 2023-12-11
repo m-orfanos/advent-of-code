@@ -22,8 +22,9 @@ This directory contains notes I took while solving puzzles.
 
 - `journal` 
 	- each file acts as a scratchpad, somewhere to take notes as puzzles are solved
+	- each file links to the puzzles attempted/solved on that day
 - `puzzles` 
-	- the content varies, usually each file contains a list of sub-problems that had to be solved with a smattering of how everything was put together
+	- contains a file for each problem, these are usually empty
 - `templates`
 	- files used as a base when creating new notes
 - `wiki`
