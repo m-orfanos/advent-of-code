@@ -1,18 +1,18 @@
 use std::io::{self, BufRead};
 
+struct EnginePart {
+    number: u32,
+    row: i32,
+    cols: Vec<usize>,
+}
+
+struct Symbol {
+    // ch: char, // might be useful in part 2, it was not
+    row: i32,
+    col: usize,
+}
+
 fn main() {
-    struct EnginePart {
-        number: u32,
-        row: i32,
-        cols: Vec<usize>,
-    }
-
-    struct Symbol {
-        // ch: char, // might be useful in part 2, it was not
-        row: i32,
-        col: usize,
-    }
-
     let mut parts: Vec<EnginePart> = Vec::new();
     let mut symbols: Vec<Symbol> = Vec::new();
 
