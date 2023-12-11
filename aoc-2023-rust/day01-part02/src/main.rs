@@ -1,66 +1,66 @@
 use std::io::{self, BufRead};
 
+struct WordDigit<'a> {
+    word: &'a str,
+    digit: u32,
+}
+
+static WORD_DIGITS: &'static [WordDigit] = &[
+    WordDigit {
+        word: "zero",
+        digit: 0,
+    },
+    WordDigit {
+        word: "one",
+        digit: 1,
+    },
+    WordDigit {
+        word: "two",
+        digit: 2,
+    },
+    WordDigit {
+        word: "three",
+        digit: 3,
+    },
+    WordDigit {
+        word: "four",
+        digit: 4,
+    },
+    WordDigit {
+        word: "five",
+        digit: 5,
+    },
+    WordDigit {
+        word: "six",
+        digit: 6,
+    },
+    WordDigit {
+        word: "seven",
+        digit: 7,
+    },
+    WordDigit {
+        word: "eight",
+        digit: 8,
+    },
+    WordDigit {
+        word: "nine",
+        digit: 9,
+    },
+];
+
+struct Calibration {
+    idx: usize,
+    digit: u32,
+}
+
 fn main() {
-    struct WordDigit {
-        word: &'static str,
-        digit: u32,
-    }
-
-    let word_digits = [
-        WordDigit {
-            word: "zero",
-            digit: 0,
-        },
-        WordDigit {
-            word: "one",
-            digit: 1,
-        },
-        WordDigit {
-            word: "two",
-            digit: 2,
-        },
-        WordDigit {
-            word: "three",
-            digit: 3,
-        },
-        WordDigit {
-            word: "four",
-            digit: 4,
-        },
-        WordDigit {
-            word: "five",
-            digit: 5,
-        },
-        WordDigit {
-            word: "six",
-            digit: 6,
-        },
-        WordDigit {
-            word: "seven",
-            digit: 7,
-        },
-        WordDigit {
-            word: "eight",
-            digit: 8,
-        },
-        WordDigit {
-            word: "nine",
-            digit: 9,
-        },
-    ];
-
-    #[derive(Debug)]
-    struct Calibration {
-        idx: usize,
-        digit: u32,
-    }
-
     let mut ans = 0;
+
     for line in io::stdin().lock().lines() {
         let haystack = line.unwrap();
 
         // parse the words
-        let ws: Vec<Calibration> = word_digits
+        let ws: Vec<Calibration> = WORD_DIGITS
             .iter()
             .flat_map(|wd| {
                 // return first and last, if applicable
