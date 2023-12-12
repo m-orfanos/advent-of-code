@@ -1,8 +1,6 @@
 use std::io::{self, BufRead};
-
-fn parse_heading(s: &String) -> Vec<&str> {
-    s.split(":").map(|x| x.trim()).collect::<Vec<&str>>()
-}
+use crates::common::day06::{search_lhs, search_rhs};
+use crates::parsers::parse_heading;
 
 fn parse_arr(s: &str) -> Vec<i64> {
     s.split(" ")
@@ -57,7 +55,7 @@ fn main() {
     for (t, d) in ts.into_iter().zip(ds.into_iter()) {
         // the search space is divided into two segments, LHS/RHS
         // LHS is always ascending, can use binary search as normal
-        // RHS is always descending, need to tweat bserch a bit
+        // RHS is always descending, need to tweak binary search a bit
         let lhs = search_lhs(t, d);
         let rhs = search_rhs(t, d);
         res.push((t, d, lhs, rhs, rhs - lhs + 1));
@@ -68,86 +66,4 @@ fn main() {
         ans *= r.4;
     }
     println!("{:?}", ans);
-}
-
-fn search_rhs(t: i64, d: i64) -> i64 {
-    let from = peak(t).floor() as i64 - 1;
-    let to = t;
-    let insertion_point = binary_search_inv(t, d, from, to);
-    find_precise(t, d, insertion_point)
-}
-
-fn binary_search_inv(t: i64, d: i64, from: i64, to: i64) -> i64 {
-    let mut low = from;
-    let mut high = to;
-
-    while low <= high {
-        let m = idiv(low + high, 2);
-        let fm = fx(m, t);
-        if fm > d {
-            low = m + 1;
-        } else if fm < d {
-            high = m - 1;
-        } else {
-            return m; // exact match
-        }
-    }
-
-    -1 * (low + 1) // closest match
-}
-
-fn find_precise(t: i64, d: i64, estimate: i64) -> i64 {
-    // check around the binary search result, just in case :)
-    let needle;
-    if estimate < 0 {
-        needle = -1 * (estimate + 1);
-    } else {
-        needle = estimate;
-    }
-
-    if d < fx(needle - 1, t) {
-        return needle - 1;
-    } else if d < fx(needle, t) {
-        return needle;
-    } else {
-        return needle + 1;
-    }
-}
-
-fn search_lhs(t: i64, d: i64) -> i64 {
-    let from = 0;
-    let to = peak(t).ceil() as i64 - 1;
-    let insertion_point = binary_search(t, d, from, to);
-    find_precise(t, d, insertion_point)
-}
-
-fn binary_search(t: i64, d: i64, from: i64, to: i64) -> i64 {
-    let mut low = from;
-    let mut high = to;
-
-    while low <= high {
-        let m = idiv(low + high, 2);
-        let fm = fx(m, t);
-        if fm < d {
-            low = m + 1;
-        } else if fm > d {
-            high = m - 1;
-        } else {
-            return m; // exact match
-        }
-    }
-
-    -1 * (low + 1) // closest match
-}
-
-fn fx(p: i64, t: i64) -> i64 {
-    (t - p) * p
-}
-
-fn peak(t: i64) -> f64 {
-    (t as f64) / 2.0
-}
-
-fn idiv(a: i64, b: i64) -> i64 {
-    (a as f64 / b as f64) as i64
 }
