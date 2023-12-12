@@ -2,4 +2,4 @@
 DAY="day$1"
 PART="part$2"
 PUZZLE="$DAY-$PART"
-cargo run -p $PUZZLE < /home/morfanos/Github/advent-of-code/aoc-2023-rust/resources/$DAY-input-test
+cargo run -p $PUZZLE < ./resources/$DAY-input-test

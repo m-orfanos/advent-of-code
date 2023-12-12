@@ -21,14 +21,17 @@ This directory contains notes I took while solving puzzles.
 ```
 
 - `journal` 
-	- each file acts as a scratchpad, somewhere to take notes as puzzles are solved
-	- each file links to the puzzles attempted/solved on that day
+	- contents: files for each IRL day I attempted a puzzle
+	- contains links to the puzzles attempted/solved on that day
 - `puzzles` 
-	- contains a file for each problem, these are usually empty
+	- contents: files for each puzzle
+	- each file acts as a scratchpad, a place to take notes as puzzles are solved
+	- usually empty, but sometimes describes the approach taken
 - `templates`
-	- files used as a base when creating new notes
+	- contents: files used as a base when creating new notes
 - `wiki`
-	- each file attempts to solve on a generic task; these tasks are typically glued together to solve a puzzle
+	- contents: files summarizing a solution for a generic task
+	- these tasks are typically glued together to solve a puzzle
 
 > [!warning]
 > These notes are NOT an attempt to outline each puzzle and the approach taken to solve it, and especially not a comprehensive tutorial. I do not expect anyone else to get any value from these notes. They exist to keep me organized and provide a historical log.
