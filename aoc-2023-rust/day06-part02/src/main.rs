@@ -1,16 +1,6 @@
-use std::io::{self, BufRead};
 use crates::common::day06::{search_lhs, search_rhs};
-use crates::parsers::parse_heading;
-
-fn parse(s: &str) -> i64 {
-    let mut ans = 0;
-    for ch in s.chars() {
-        if ch.is_digit(10) {
-            ans = ans * 10 + ch.to_digit(10).unwrap() as i64;
-        }
-    }
-    ans
-}
+use crates::parsers::{parse_int, split};
+use std::io::{self, BufRead};
 
 fn main() {
     // parse input
@@ -19,11 +9,9 @@ fn main() {
     for line_res in io::stdin().lock().lines() {
         let line = line_res.unwrap();
         if line.starts_with("Time") {
-            let ts = parse_heading(&line)[1];
-            t = parse(ts);
+            t = parse_int(&split(&line, ":")[1]);
         } else if line.starts_with("Distance") {
-            let ds = parse_heading(&line)[1];
-            d = parse(ds);
+            d = parse_int(&split(&line, ":")[1]);
         }
     }
 
@@ -54,7 +42,6 @@ fn main() {
     //
     // we can now use binary search to quickly find
     // the interval containing all winning moves
-
     let lhs = search_lhs(t, d);
     let rhs = search_rhs(t, d);
     println!("{:?}", rhs - lhs + 1);

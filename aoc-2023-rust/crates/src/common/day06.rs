@@ -1,4 +1,4 @@
-use crate::parsers::div;
+use crate::common::div;
 
 pub fn search_lhs(t: i64, d: i64) -> i64 {
     let from = 0;
@@ -23,7 +23,7 @@ fn peak(t: i64) -> f64 {
 }
 
 fn find_precise(t: i64, d: i64, estimate: i64) -> i64 {
-// check around the binary search result, just in case :)
+    // check around the binary search result, just in case :)
     let needle;
     if estimate < 0 {
         needle = -1 * (estimate + 1);

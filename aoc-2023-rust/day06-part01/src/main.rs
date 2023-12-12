@@ -1,14 +1,6 @@
-use std::io::{self, BufRead};
 use crates::common::day06::{search_lhs, search_rhs};
-use crates::parsers::parse_heading;
-
-fn parse_arr(s: &str) -> Vec<i64> {
-    s.split(" ")
-        .map(|x| x.trim())
-        .filter(|x| !x.is_empty())
-        .map(|x| x.parse::<i64>().unwrap())
-        .collect::<Vec<i64>>()
-}
+use crates::parsers::{parse_ints, split};
+use std::io::{self, BufRead};
 
 fn main() {
     // parse input
@@ -17,13 +9,11 @@ fn main() {
     for line_res in io::stdin().lock().lines() {
         let line = line_res.unwrap();
         if line.starts_with("Time") {
-            ts = parse_arr(parse_heading(&line)[1]);
+            ts = parse_ints(&split(&line, ":")[1], " ");
         } else if line.starts_with("Distance") {
-            ds = parse_arr(parse_heading(&line)[1]);
+            ds = parse_ints(&split(&line, ":")[1], " ");
         }
     }
-
-    let mut res = Vec::new();
 
     // imagine graphing a function (the maths kind)
     //
@@ -52,6 +42,7 @@ fn main() {
     //
     // we can now use binary search to quickly find
     // the interval containing all winning moves
+    let mut res = Vec::new();
     for (t, d) in ts.into_iter().zip(ds.into_iter()) {
         // the search space is divided into two segments, LHS/RHS
         // LHS is always ascending, can use binary search as normal
