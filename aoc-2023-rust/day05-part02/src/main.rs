@@ -29,7 +29,7 @@ fn main() {
         let line = line_res.unwrap();
 
         if line.is_empty() {
-            // reached the end of the current config
+            // reached the end of the current list of mappings
             // reset mode
             mode = ParseMode::Pending;
             continue;
@@ -41,6 +41,7 @@ fn main() {
                 let parts = parse_heading(&line);
                 let config = parse_arr(parts[1]);
 
+                // these always come in pairs
                 let mut it = config.iter();
                 while let Some(src_start) = it.next() {
                     seeds.push((src_start + 0, it.next().unwrap() + 0));
@@ -52,34 +53,13 @@ fn main() {
             // seed-to-soil map:
             // 50 98 2
             // 52 50 48
-            ParseMode::SeedToSoil => {
-                let config = parse_arr(&line);
-                seed_to_soil.push((config[1], config[0], config[2]));
-            }
-            ParseMode::SoilToFertilizer => {
-                let config = parse_arr(&line);
-                soil_to_fert.push((config[1], config[0], config[2]));
-            }
-            ParseMode::FertilizerToWater => {
-                let config = parse_arr(&line);
-                fert_to_water.push((config[1], config[0], config[2]));
-            }
-            ParseMode::WaterToLight => {
-                let config = parse_arr(&line);
-                water_to_light.push((config[1], config[0], config[2]));
-            }
-            ParseMode::LightToTemperature => {
-                let config = parse_arr(&line);
-                light_to_temp.push((config[1], config[0], config[2]));
-            }
-            ParseMode::TemperatureToHumidity => {
-                let config = parse_arr(&line);
-                temp_to_hum.push((config[1], config[0], config[2]));
-            }
-            ParseMode::HumitityToLocation => {
-                let config = parse_arr(&line);
-                hum_to_loc.push((config[1], config[0], config[2]));
-            }
+            ParseMode::SeedToSoil => add_mapping(&line, &mut seed_to_soil),
+            ParseMode::SoilToFertilizer => add_mapping(&line, &mut soil_to_fert),
+            ParseMode::FertilizerToWater => add_mapping(&line, &mut fert_to_water),
+            ParseMode::WaterToLight => add_mapping(&line, &mut water_to_light),
+            ParseMode::LightToTemperature => add_mapping(&line, &mut light_to_temp),
+            ParseMode::TemperatureToHumidity => add_mapping(&line, &mut temp_to_hum),
+            ParseMode::HumitityToLocation => add_mapping(&line, &mut hum_to_loc),
             // determine what should be parsed next
             // empty lines are ignored
             ParseMode::Pending => {
@@ -212,6 +192,11 @@ fn find_intersection(s1: u64, e1: u64, s2: u64, e2: u64) -> Option<(u64, u64)> {
         let e = e1.min(e2);
         Some((s, e))
     }
+}
+
+fn add_mapping(line: &String, src_to_dst: &mut Vec<(u64, u64, u64)>) {
+    let config = parse_arr(line);
+    src_to_dst.push((config[1], config[0], config[2]));
 }
 
 // formats
