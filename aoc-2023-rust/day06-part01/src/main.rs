@@ -1,3 +1,7 @@
+use std::io::{self, BufRead};
+
 fn main() {
-    println!("Hello, world!");
+    for line_res in io::stdin().lock().lines() {
+        let line = line_res.unwrap();
+    }
 }
