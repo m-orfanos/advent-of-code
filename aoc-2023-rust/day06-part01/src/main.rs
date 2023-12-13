@@ -1,5 +1,5 @@
 use crates::common::day06::{search_lhs, search_rhs};
-use crates::parsers::{parse_ints, split};
+use crates::parsers::{parse_i64s, split};
 use std::io::{self, BufRead};
 
 fn main() {
@@ -9,9 +9,9 @@ fn main() {
     for line_res in io::stdin().lock().lines() {
         let line = line_res.unwrap();
         if line.starts_with("Time") {
-            ts = parse_ints(&split(&line, ":")[1], " ");
+            ts = parse_i64s(&split(&line, ":")[1], " ");
         } else if line.starts_with("Distance") {
-            ds = parse_ints(&split(&line, ":")[1], " ");
+            ds = parse_i64s(&split(&line, ":")[1], " ");
         }
     }
 
