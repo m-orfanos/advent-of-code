@@ -13,10 +13,16 @@ version = "0.1.0"
 [[package]]
 name = "day01-part01"
 version = "0.1.0"
+dependencies = [
+ "crates",
+]
 
 [[package]]
 name = "day01-part02"
 version = "0.1.0"
+dependencies = [
+ "crates",
+]
 
 [[package]]
 name = "day02-part01"
