@@ -38,16 +38,6 @@ fn main() {
             for (j, rank) in ranks.iter().enumerate() {
                 if card == *rank {
                     hash *= primes[j];
-
-                    // assuming 2 players have the same "rank" (one pair, two pair, etc)
-                    // we must compare the card in order
-                    // the order is important!
-                    // model the problem as follows...
-                    // consider a 64 bit integer
-                    //   bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                    // A KQJT98765432AKQJT98765432AKQJT98765432AKQJT98765432AKQJT98765432
-                    // we can compare the "same ranks" by setting the bits in the same order
-                    // of the player's hand and comparing the two numbers
                     hand.push(j);
                     break;
                 }
@@ -60,6 +50,8 @@ fn main() {
     players.sort_by(|a, b| {
         let cmp = a.2.cmp(&b.2);
         if cmp.is_eq() {
+            // this isn't very fast, but it shouldn't
+            // happen that often (surely)
             for (i, c1) in a.0.iter().enumerate() {
                 let c2 = b.0[i];
                 if c1.cmp(&c2).is_ne() {
