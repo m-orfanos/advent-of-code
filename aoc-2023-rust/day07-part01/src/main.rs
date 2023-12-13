@@ -65,7 +65,6 @@ fn main() {
 
     let mut winnings = 0;
     for (i, p) in players.iter().enumerate() {
-        println!("{:?}", p);
         winnings += p.1 * (1 + i as u64);
     }
     println!("{:?}", winnings);
