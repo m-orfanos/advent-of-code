@@ -1,11 +1,19 @@
+use crates::common::day07::Hand;
+use crates::common::day07::CARD_RANKS;
+use crates::common::day07::PRIMES;
 use crates::{
-    common::day07::{compute_hash_to_type, sort_hands, CARD_RANKS, PRIMES},
+    common::day07::{compute_hands, sort_hands},
     parsers::split,
 };
+use std::collections::HashMap;
 use std::io::{self, BufRead};
 
 fn main() {
-    let hash_to_hand = compute_hash_to_type(&CARD_RANKS, &PRIMES);
+    let hands = compute_hands();
+    let mut hash_to_hand: HashMap<u64, Hand> = HashMap::new();
+    for h in hands {
+        hash_to_hand.insert(h.prime_hash, h);
+    }
 
     let mut players = Vec::new();
     for line_res in io::stdin().lock().lines() {
@@ -16,19 +24,23 @@ fn main() {
         let bid = u64::from_str_radix(line2[1], 10).unwrap();
 
         // parse input, compute hash/hand_type
-        let mut hand = Vec::new();
+        let mut cards = Vec::new();
         let mut hash = 1;
         for card in cards_str.chars() {
-            for (j, card_rank) in CARD_RANKS.iter().enumerate() {
-                if card == *card_rank {
+            for (j, rank) in CARD_RANKS.iter().enumerate() {
+                if card == *rank {
                     hash *= PRIMES[j];
-                    hand.push(j);
+                    cards.push(j);
                     break;
                 }
             }
         }
-        let hand_type = &hash_to_hand[&hash];
-        players.push((hand, bid, hand_type));
+        let Hand {
+            bit_hash: _,
+            hand_type,
+            prime_hash: _,
+        }: &Hand = &hash_to_hand[&hash];
+        players.push((cards, bid, hand_type));
     }
 
     sort_hands(&mut players);
