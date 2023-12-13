@@ -1,16 +1,6 @@
+use crates::common::day05::{get_mode, ParseMode};
+use crates::parsers::{parse_uints, split};
 use std::io::{self, BufRead};
-
-enum ParseMode {
-    Seeds,
-    SeedToSoil,
-    SoilToFertilizer,
-    FertilizerToWater,
-    WaterToLight,
-    LightToTemperature,
-    TemperatureToHumidity,
-    HumitityToLocation,
-    Pending,
-}
 
 fn main() {
     let mut seeds: Vec<(u64, u64)> = Vec::new();
@@ -37,53 +27,25 @@ fn main() {
 
         match mode {
             ParseMode::Seeds => {
-                // seeds: 79 14 55 13
-                let parts = parse_heading(&line);
-                let config = parse_arr(parts[1]);
-
                 // these always come in pairs
+                let config = parse_seeds(&line);
                 let mut it = config.iter();
                 while let Some(src_start) = it.next() {
                     seeds.push((src_start + 0, it.next().unwrap() + 0));
                 }
-
                 mode = ParseMode::Pending;
             }
-            // config format
-            // seed-to-soil map:
-            // 50 98 2
-            // 52 50 48
-            ParseMode::SeedToSoil => add_mapping(&line, &mut seed_to_soil),
-            ParseMode::SoilToFertilizer => add_mapping(&line, &mut soil_to_fert),
-            ParseMode::FertilizerToWater => add_mapping(&line, &mut fert_to_water),
-            ParseMode::WaterToLight => add_mapping(&line, &mut water_to_light),
-            ParseMode::LightToTemperature => add_mapping(&line, &mut light_to_temp),
-            ParseMode::TemperatureToHumidity => add_mapping(&line, &mut temp_to_hum),
-            ParseMode::HumitityToLocation => add_mapping(&line, &mut hum_to_loc),
+            ParseMode::SeedToSoil => insert(&line, &mut seed_to_soil),
+            ParseMode::SoilToFertilizer => insert(&line, &mut soil_to_fert),
+            ParseMode::FertilizerToWater => insert(&line, &mut fert_to_water),
+            ParseMode::WaterToLight => insert(&line, &mut water_to_light),
+            ParseMode::LightToTemperature => insert(&line, &mut light_to_temp),
+            ParseMode::TemperatureToHumidity => insert(&line, &mut temp_to_hum),
+            ParseMode::HumidityToLocation => insert(&line, &mut hum_to_loc),
             // determine what should be parsed next
             // empty lines are ignored
             ParseMode::Pending => {
-                if line.is_empty() {
-                    mode = ParseMode::Pending;
-                } else if line.starts_with("seeds") {
-                    mode = ParseMode::Seeds;
-                } else if line.starts_with("seed-to-soil") {
-                    mode = ParseMode::SeedToSoil;
-                } else if line.starts_with("soil-to-fertilizer") {
-                    mode = ParseMode::SoilToFertilizer;
-                } else if line.starts_with("fertilizer-to-water") {
-                    mode = ParseMode::FertilizerToWater;
-                } else if line.starts_with("water-to-light") {
-                    mode = ParseMode::WaterToLight;
-                } else if line.starts_with("light-to-temperature") {
-                    mode = ParseMode::LightToTemperature;
-                } else if line.starts_with("temperature-to-humidity") {
-                    mode = ParseMode::TemperatureToHumidity;
-                } else if line.starts_with("humidity-to-location") {
-                    mode = ParseMode::HumitityToLocation;
-                } else {
-                    mode = ParseMode::Pending;
-                }
+                mode = get_mode(line);
             }
         }
     }
@@ -113,6 +75,15 @@ fn main() {
     }
 
     println!("{:?}", ans);
+}
+
+fn insert(line: &String, src_to_dst: &mut Vec<(u64, u64, u64)>) {
+    let config = parse_uints(line, " ");
+    src_to_dst.push((config[1], config[0], config[2]));
+}
+
+fn parse_seeds(line: &String) -> Vec<u64> {
+    parse_uints(&split(&line, ":")[1], " ")
 }
 
 fn find_next(srcs: &Vec<(u64, u64)>, src_to_dst: Vec<(u64, u64, u64)>) -> Vec<(u64, u64)> {
@@ -192,26 +163,4 @@ fn find_intersection(s1: u64, e1: u64, s2: u64, e2: u64) -> Option<(u64, u64)> {
         let e = e1.min(e2);
         Some((s, e))
     }
-}
-
-fn add_mapping(line: &String, src_to_dst: &mut Vec<(u64, u64, u64)>) {
-    let config = parse_arr(line);
-    src_to_dst.push((config[1], config[0], config[2]));
-}
-
-// formats
-// seeds: 79 14 55 13
-// seed-to-soil map:
-fn parse_heading(s: &String) -> Vec<&str> {
-    s.split(":").map(|x| x.trim()).collect::<Vec<&str>>()
-}
-
-// format
-// 79 14 55 13
-fn parse_arr(s: &str) -> Vec<u64> {
-    s.split(" ")
-        .map(|x| x.trim())
-        .filter(|x| !x.is_empty())
-        .map(|x| x.parse::<u64>().unwrap())
-        .collect::<Vec<u64>>()
 }

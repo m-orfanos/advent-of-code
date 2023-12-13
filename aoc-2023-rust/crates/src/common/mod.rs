@@ -1,3 +1,4 @@
+pub mod day05;
 pub mod day06;
 
 pub fn div(a: i64, b: i64) -> i64 {

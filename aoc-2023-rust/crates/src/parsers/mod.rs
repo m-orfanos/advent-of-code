@@ -14,6 +14,14 @@ pub fn parse_ints(s: &String, delimiter: &str) -> Vec<i64> {
         .collect::<Vec<i64>>()
 }
 
+pub fn parse_uints(s: &str, pattern: &str) -> Vec<u64> {
+    s.split(pattern)
+        .map(|x| x.trim())
+        .filter(|x| !x.is_empty())
+        .map(|x| x.parse::<u64>().unwrap())
+        .collect::<Vec<u64>>()
+}
+
 // create i64 from str
 // equivalent to deleting all non-digit characters and
 // parsing into an i64

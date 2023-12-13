@@ -1,16 +1,6 @@
+use crates::common::day05::ParseMode;
+use crates::parsers::{parse_uints, split};
 use std::io::{self, BufRead};
-
-enum ParseMode {
-    Seeds,
-    SeedToSoil,
-    SoilToFertilizer,
-    FertilizerToWater,
-    WaterToLight,
-    LightToTemperature,
-    TemperatureToHumidity,
-    HumitityToLocation,
-    Pending,
-}
 
 struct Config {
     src: u64,
@@ -43,22 +33,16 @@ fn main() {
 
         match mode {
             ParseMode::Seeds => {
-                // seeds: 79 14 55 13
-                let parts = parse_heading(&line);
-                seeds = parse_arr(parts[1]);
+                seeds = parse_seeds(&line);
                 mode = ParseMode::Pending;
             }
-            // config format
-            // seed-to-soil map:
-            // 50 98 2
-            // 52 50 48
-            ParseMode::SeedToSoil => extend_cfg(&mut seed_to_soil, parse_arr(&line)),
-            ParseMode::SoilToFertilizer => extend_cfg(&mut soil_to_fert, parse_arr(&line)),
-            ParseMode::FertilizerToWater => extend_cfg(&mut fert_to_water, parse_arr(&line)),
-            ParseMode::WaterToLight => extend_cfg(&mut water_to_light, parse_arr(&line)),
-            ParseMode::LightToTemperature => extend_cfg(&mut light_to_temp, parse_arr(&line)),
-            ParseMode::TemperatureToHumidity => extend_cfg(&mut temp_to_hum, parse_arr(&line)),
-            ParseMode::HumitityToLocation => extend_cfg(&mut hum_to_loc, parse_arr(&line)),
+            ParseMode::SeedToSoil => insert(&mut seed_to_soil, &line),
+            ParseMode::SoilToFertilizer => insert(&mut soil_to_fert, &line),
+            ParseMode::FertilizerToWater => insert(&mut fert_to_water, &line),
+            ParseMode::WaterToLight => insert(&mut water_to_light, &line),
+            ParseMode::LightToTemperature => insert(&mut light_to_temp, &line),
+            ParseMode::TemperatureToHumidity => insert(&mut temp_to_hum, &line),
+            ParseMode::HumidityToLocation => insert(&mut hum_to_loc, &line),
             // determine what should be parsed next
             // empty lines are ignored
             ParseMode::Pending => {
@@ -79,7 +63,7 @@ fn main() {
                 } else if line.starts_with("temperature-to-humidity") {
                     mode = ParseMode::TemperatureToHumidity;
                 } else if line.starts_with("humidity-to-location") {
-                    mode = ParseMode::HumitityToLocation;
+                    mode = ParseMode::HumidityToLocation;
                 } else {
                     mode = ParseMode::Pending;
                 }
@@ -105,44 +89,29 @@ fn main() {
     println!("{}", ans);
 }
 
-fn find_next(seed: u64, cx: &Vec<Config>) -> u64 {
-    let mut needle = seed;
-
-    for c in cx {
-        if needle < c.src {
-            continue;
-        }
-
-        if c.src <= needle && needle <= c.src + c.distance {
-            needle = c.dst + (needle - c.src);
-            break;
-        }
-    }
-
-    needle
-}
-
-fn extend_cfg(map: &mut Vec<Config>, config: Vec<u64>) {
-    map.push(Config {
+fn insert(src_to_dst: &mut Vec<Config>, line: &String) {
+    let config = parse_uints(&line, " ");
+    src_to_dst.push(Config {
         src: config[1],
         dst: config[0],
         distance: config[2],
     });
 }
 
-// formats
-// seeds: 79 14 55 13
-// seed-to-soil map:
-fn parse_heading(s: &String) -> Vec<&str> {
-    s.split(":").map(|x| x.trim()).collect::<Vec<&str>>()
+fn parse_seeds(line: &String) -> Vec<u64> {
+    parse_uints(&split(&line, ":")[1], " ")
 }
 
-// format
-// 79 14 55 13
-fn parse_arr(s: &str) -> Vec<u64> {
-    s.split(" ")
-        .map(|x| x.trim())
-        .filter(|x| !x.is_empty())
-        .map(|x| x.parse::<u64>().unwrap())
-        .collect::<Vec<u64>>()
+fn find_next(seed: u64, cx: &Vec<Config>) -> u64 {
+    let mut needle = seed;
+    for c in cx {
+        if needle < c.src {
+            continue;
+        }
+        if c.src <= needle && needle <= c.src + c.distance {
+            needle = c.dst + (needle - c.src);
+            break;
+        }
+    }
+    needle
 }
