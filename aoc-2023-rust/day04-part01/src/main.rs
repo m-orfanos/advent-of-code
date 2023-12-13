@@ -1,36 +1,23 @@
+use crates::parsers::{parse_ints, split};
 use std::io::{self, BufRead};
 
 fn main() {
-    let stdin = io::stdin();
-
-    let mut ans = 0;
-    for line_res in stdin.lock().lines() {
+    let mut ans: i64 = 0;
+    for line_res in io::stdin().lock().lines() {
         let line = line_res.unwrap();
 
         // start parse input
-        let card = line.split(":").map(|x| x.trim()).collect::<Vec<&str>>();
-        let nbs = card[1].split("|").map(|x| x.trim()).collect::<Vec<&str>>();
+        let card = split(&line, ":");
+        let nbs = split(&card[1], "|");
 
-        // parse winning numbers
-        let mut winning_nbs = nbs[0]
-            .split(" ")
-            .map(|x| x.trim())
-            .filter(|x| !x.is_empty())
-            .map(|x| x.parse::<u32>().unwrap())
-            .collect::<Vec<u32>>();
+        let mut winning_nbs = parse_ints(&nbs[0].to_string(), " ");
         winning_nbs.sort();
 
-        // parse player numbers
-        let mut player_nbs = nbs[1]
-            .split(" ")
-            .map(|x| x.trim())
-            .filter(|x| !x.is_empty())
-            .map(|x| x.parse::<u32>().unwrap())
-            .collect::<Vec<u32>>();
+        let mut player_nbs = parse_ints(&nbs[1].to_string(), " ");
         player_nbs.sort();
 
         // calculate points
-        let mut cnt = 0;
+        let mut cnt: i64 = 0;
         for win_nb in winning_nbs {
             for pl_nb in &player_nbs {
                 if pl_nb > &win_nb {
@@ -43,7 +30,7 @@ fn main() {
         }
 
         if cnt > 0 {
-            ans += u32::pow(2, cnt - 1);
+            ans += i64::pow(2, (cnt - 1) as u32);
         }
     }
 
