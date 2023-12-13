@@ -1,5 +1,5 @@
 use crates::common::day05::ParseMode;
-use crates::parsers::{parse_uints, split};
+use crates::parsers::{parse_u64s, split};
 use std::io::{self, BufRead};
 
 struct Config {
@@ -90,7 +90,7 @@ fn main() {
 }
 
 fn insert(src_to_dst: &mut Vec<Config>, line: &String) {
-    let config = parse_uints(&line, " ");
+    let config = parse_u64s(&line, " ");
     src_to_dst.push(Config {
         src: config[1],
         dst: config[0],
@@ -99,7 +99,7 @@ fn insert(src_to_dst: &mut Vec<Config>, line: &String) {
 }
 
 fn parse_seeds(line: &String) -> Vec<u64> {
-    parse_uints(&split(&line, ":")[1], " ")
+    parse_u64s(&split(&line, ":")[1], " ")
 }
 
 fn find_next(seed: u64, cx: &Vec<Config>) -> u64 {
