@@ -1,4 +1,4 @@
-use std::{cmp, collections::HashMap};
+use std::cmp;
 
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub enum HandType {
@@ -18,7 +18,13 @@ pub static CARD_RANKS: [char; 13] = [
 
 pub static PRIMES: [u64; 13] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41];
 
-pub fn compute_hash_to_type(ranks: &[char; 13], primes: &[u64; 13]) -> HashMap<u64, HandType> {
+pub struct Hand {
+    pub bit_hash: u64,
+    pub hand_type: HandType,
+    pub prime_hash: u64,
+}
+
+pub fn compute_hands() -> Vec<Hand> {
     // this looks like a lot of work, but there are only 6188 combinations
     //
     // how to determine a player's rank?
@@ -32,15 +38,18 @@ pub fn compute_hash_to_type(ranks: &[char; 13], primes: &[u64; 13]) -> HashMap<u
     // 1p = 4 unique ranks
     // hc = 5 unique ranks
     //
-    let mut hands = HashMap::new();
+    let mut hands = Vec::new();
 
     // // compute 5K
-    for (i, r) in ranks.iter().enumerate() {
-        let hash = compute_hash(primes, i, i, i, i, i);
+    for (i, r) in CARD_RANKS.iter().enumerate() {
+        let ph = build_prime_hash(vec![(i, 1), (i, 1), (i, 1), (i, 1), (i, 1)]);
+
+        let ranks_hash = 1 << i;
+
         if *r == 'A' {
-            hands.insert(hash, HandType::FiveAces);
+            hands.push(build_hand(ph, ranks_hash, HandType::FiveAces));
         } else {
-            hands.insert(hash, HandType::FiveKind);
+            hands.push(build_hand(ph, ranks_hash, HandType::FiveKind));
         }
     }
 
@@ -51,12 +60,15 @@ pub fn compute_hash_to_type(ranks: &[char; 13], primes: &[u64; 13]) -> HashMap<u
         (3, 2, HandType::FullHouse),
         (2, 3, HandType::FullHouse),
     ] {
-        for i in 0..ranks.len() {
-            for j in (i + 1)..ranks.len() {
-                let h1 = u64::pow(primes[i], n1);
-                let h2 = u64::pow(primes[j], n2);
-                let hash = h1 * h2;
-                hands.insert(hash, hand_type);
+        for i in 0..CARD_RANKS.len() {
+            for j in (i + 1)..CARD_RANKS.len() {
+                let ph = build_prime_hash(vec![(i, n1), (j, n2)]);
+
+                let ii = 1 << (i * n1 as usize);
+                let jj = 1 << (j * n2 as usize);
+                let rank_hash = 1 << i | 1 << j | ii | jj;
+
+                hands.push(build_hand(ph, rank_hash, hand_type));
             }
         }
     }
@@ -70,14 +82,17 @@ pub fn compute_hash_to_type(ranks: &[char; 13], primes: &[u64; 13]) -> HashMap<u
         (1, 2, 2, HandType::TwoPair),
         (2, 1, 2, HandType::TwoPair),
     ] {
-        for i in 0..ranks.len() {
-            for j in (i + 1)..ranks.len() {
-                for k in (j + 1)..ranks.len() {
-                    let h1 = u64::pow(primes[i], n1);
-                    let h2 = u64::pow(primes[j], n2);
-                    let h3 = u64::pow(primes[k], n3);
-                    let hash = h1 * h2 * h3;
-                    hands.insert(hash, hand_type);
+        for i in 0..CARD_RANKS.len() {
+            for j in (i + 1)..CARD_RANKS.len() {
+                for k in (j + 1)..CARD_RANKS.len() {
+                    let ph = build_prime_hash(vec![(i, n1), (j, n2), (k, n3)]);
+
+                    let ii = 1 << (i * n1 as usize);
+                    let jj = 1 << (j * n2 as usize);
+                    let kk = 1 << (k * n3 as usize);
+                    let rank_hash = 1 << i | 1 << j | 1 << k | ii | jj | kk;
+
+                    hands.push(build_hand(ph, rank_hash, hand_type));
                 }
             }
         }
@@ -85,16 +100,20 @@ pub fn compute_hash_to_type(ranks: &[char; 13], primes: &[u64; 13]) -> HashMap<u
 
     // // computer 1p
     for (n1, n2, n3, n4) in [(2, 1, 1, 1), (1, 2, 1, 1), (1, 1, 2, 1), (1, 1, 1, 2)] {
-        for i in 0..ranks.len() {
-            for j in (i + 1)..ranks.len() {
-                for k in (j + 1)..ranks.len() {
-                    for l in (k + 1)..ranks.len() {
-                        let h1 = u64::pow(primes[i], n1);
-                        let h2 = u64::pow(primes[j], n2);
-                        let h3 = u64::pow(primes[k], n3);
-                        let h4 = u64::pow(primes[l], n4);
-                        let hash = h1 * h2 * h3 * h4;
-                        hands.insert(hash, HandType::OnePair);
+        for i in 0..CARD_RANKS.len() {
+            for j in (i + 1)..CARD_RANKS.len() {
+                for k in (j + 1)..CARD_RANKS.len() {
+                    for l in (k + 1)..CARD_RANKS.len() {
+                        let ph = build_prime_hash(vec![(i, n1), (j, n2), (k, n3), (l, n4)]);
+
+                        let ii = 1 << ((1 + i) * n1 as usize);
+                        let jj = 1 << ((1 + j) * n2 as usize);
+                        let kk = 1 << ((1 + k) * n3 as usize);
+                        let ll = 1 << ((1 + l) * n4 as usize);
+                        let rank_hash =
+                            (1 << i) | (1 << j) | (1 << k) | (1 << l) | ii | jj | kk | ll;
+
+                        hands.push(build_hand(ph, rank_hash, HandType::OnePair));
                     }
                 }
             }
@@ -102,13 +121,14 @@ pub fn compute_hash_to_type(ranks: &[char; 13], primes: &[u64; 13]) -> HashMap<u
     }
 
     // computer hc
-    for i in 0..ranks.len() {
-        for j in (i + 1)..ranks.len() {
-            for k in (j + 1)..ranks.len() {
-                for l in (k + 1)..ranks.len() {
-                    for m in (l + 1)..ranks.len() {
-                        let hash = compute_hash(primes, i, j, k, l, m);
-                        hands.insert(hash, HandType::HighCard);
+    for i in 0..CARD_RANKS.len() {
+        for j in (i + 1)..CARD_RANKS.len() {
+            for k in (j + 1)..CARD_RANKS.len() {
+                for l in (k + 1)..CARD_RANKS.len() {
+                    for m in (l + 1)..CARD_RANKS.len() {
+                        let ph = build_prime_hash(vec![(i, 1), (j, 1), (k, 1), (l, 1), (m, 1)]);
+                        let ranks = 1 << i | 1 << j | 1 << k | 1 << l | 1 << m;
+                        hands.push(build_hand(ph, ranks, HandType::HighCard));
                     }
                 }
             }
@@ -118,7 +138,19 @@ pub fn compute_hash_to_type(ranks: &[char; 13], primes: &[u64; 13]) -> HashMap<u
     hands
 }
 
-pub fn compute_hash(primes: &[u64; 13], i: usize, j: usize, k: usize, l: usize, m: usize) -> u64 {
+fn build_prime_hash(vs: Vec<(usize, u32)>) -> u64 {
+    vs.iter().fold(1, |acc, e| acc * u64::pow(PRIMES[e.0], e.1))
+}
+
+fn build_hand(prime_hash: u64, bit_hash: u64, hand_type: HandType) -> Hand {
+    Hand {
+        prime_hash,
+        bit_hash,
+        hand_type,
+    }
+}
+
+pub fn compute_hash(primes: [u64; 13], i: usize, j: usize, k: usize, l: usize, m: usize) -> u64 {
     primes[i] * primes[j] * primes[k] * primes[l] * primes[m]
 }
 
