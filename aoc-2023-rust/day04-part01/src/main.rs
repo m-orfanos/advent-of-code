@@ -1,4 +1,4 @@
-use crates::parsers::{parse_ints, split};
+use crates::parsers::{parse_i64s, split};
 use std::io::{self, BufRead};
 
 fn main() {
@@ -10,10 +10,10 @@ fn main() {
         let card = split(&line, ":");
         let nbs = split(&card[1], "|");
 
-        let mut winning_nbs = parse_ints(&nbs[0].to_string(), " ");
+        let mut winning_nbs = parse_i64s(&nbs[0], " ");
         winning_nbs.sort();
 
-        let mut player_nbs = parse_ints(&nbs[1].to_string(), " ");
+        let mut player_nbs = parse_i64s(&nbs[1], " ");
         player_nbs.sort();
 
         // calculate points
