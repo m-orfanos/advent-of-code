@@ -2,15 +2,14 @@ use std::{
     collections::HashMap,
     io::{self, BufRead},
 };
+use crates::parsers::{parse_ints, split};
 
 fn main() {
-    let stdin = io::stdin();
-
     let mut ans = 0;
     let mut copies = HashMap::from([(0, 0)]);
     let mut line_nb = 0;
 
-    for line_res in stdin.lock().lines() {
+    for line_res in io::stdin().lock().lines() {
         let line = line_res.unwrap();
 
         // at least one ticket, i.e. the original
@@ -20,25 +19,13 @@ fn main() {
         copies.insert(line_nb, copies[&line_nb] + 1);
 
         // being parse input
-        let card = line.split(":").map(|x| x.trim()).collect::<Vec<&str>>();
-        let nbs = card[1].split("|").map(|x| x.trim()).collect::<Vec<&str>>();
+        let card = split(&line, ":");
+        let nbs = split(&card[1], "|");
 
-        // parse winning numbers
-        let mut winning_nbs = nbs[0]
-            .split(" ")
-            .map(|x| x.trim())
-            .filter(|x| !x.is_empty())
-            .map(|x| x.parse::<u32>().unwrap())
-            .collect::<Vec<u32>>();
+        let mut winning_nbs = parse_ints(&nbs[0].to_string(), " ");
         winning_nbs.sort();
 
-        // parse player numbers
-        let mut player_nbs = nbs[1]
-            .split(" ")
-            .map(|x| x.trim())
-            .filter(|x| !x.is_empty())
-            .map(|x| x.parse::<u32>().unwrap())
-            .collect::<Vec<u32>>();
+        let mut player_nbs = parse_ints(&nbs[1].to_string(), " ");
         player_nbs.sort();
 
         // calculate nb matches
