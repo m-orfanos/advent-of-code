@@ -1,0 +1,30 @@
+{
+  "configurations": [
+    {
+      "name": "(OSX) Launch",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceRoot}/target/debug/day01-part01",
+      "args": [
+        "<",
+        "${workspaceRoot}/resources/day01-input"
+      ],
+      "cwd": "${workspaceRoot}",
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'rust-p2p-chat'",
+      "cargo": {
+        "args": [
+          "run",
+          "-p",
+          "day01-part01",
+          "<",
+          "${workspaceRoot}/resources/day01-input"
+        ],
+      },
+      "cwd": "${workspaceFolder}"
+    },
+  ]
+}
