@@ -38,9 +38,10 @@ fn main() {
         }
         let hand = hash_to_hand[&hash];
         let p = Player {
-            hand_type: hand.hand_type,
-            cards,
+            cards_str: cards_str.clone(),
             bid,
+            cards,
+            hand_type: hand.hand_type,
             bit_hash: hash,
         };
         players.push(p);

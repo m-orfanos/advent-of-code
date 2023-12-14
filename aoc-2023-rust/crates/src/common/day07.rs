@@ -9,7 +9,6 @@ pub enum HandType {
     FullHouse,
     FourKind,
     FiveKind,
-    FiveAces,
 }
 
 pub static CARD_RANKS: [char; 13] = [
@@ -62,9 +61,10 @@ impl Hand {
 
 #[derive(Debug)]
 pub struct Player {
-    pub hand_type: HandType,
-    pub cards: [usize; 5],
+    pub cards_str: String,
     pub bid: u64,
+    pub cards: [usize; 5],
+    pub hand_type: HandType,
     pub bit_hash: u64,
 }
 
@@ -84,16 +84,10 @@ pub fn compute_hands() -> Vec<Hand> {
     let mut hands = Vec::new();
 
     // compute 5K
-    for (i, r) in CARD_RANKS.iter().enumerate() {
+    for (i, _) in CARD_RANKS.iter().enumerate() {
         let ph = build_prime_hash(vec![(i, 1), (i, 1), (i, 1), (i, 1), (i, 1)]);
         let bh = 1 << i;
-
-        let ht = if *r == 'A' {
-            HandType::FiveAces
-        } else {
-            HandType::FiveKind
-        };
-
+        let ht = HandType::FiveKind;
         hands.push(Hand::new(ph, bh, ht));
     }
 
@@ -108,7 +102,6 @@ pub fn compute_hands() -> Vec<Hand> {
             for j in (i + 1)..CARD_RANKS.len() {
                 let ph = build_prime_hash(vec![(i, n1), (j, n2)]);
                 let bh = build_bit_hash(vec![(i, n1), (j, n2)]);
-
                 hands.push(Hand::new(ph, bh, hand_type));
             }
         }
@@ -128,7 +121,6 @@ pub fn compute_hands() -> Vec<Hand> {
                 for k in (j + 1)..CARD_RANKS.len() {
                     let ph = build_prime_hash(vec![(i, n1), (j, n2), (k, n3)]);
                     let bh = build_bit_hash(vec![(i, n1), (j, n2), (k, n3)]);
-
                     hands.push(Hand::new(ph, bh, hand_type));
                 }
             }
@@ -143,7 +135,6 @@ pub fn compute_hands() -> Vec<Hand> {
                     for l in (k + 1)..CARD_RANKS.len() {
                         let ph = build_prime_hash(vec![(i, n1), (j, n2), (k, n3), (l, n4)]);
                         let bh = build_bit_hash(vec![(i, n1), (j, n2), (k, n3), (l, n4)]);
-
                         hands.push(Hand::new(ph, bh, HandType::OnePair));
                     }
                 }

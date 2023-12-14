@@ -1,14 +1,18 @@
 use std::{
+    cmp,
     collections::HashMap,
     io::{self, BufRead},
 };
 
 use crates::{
-    common::day07::{compute_hands, sort_hands, Hand, HandType, Player, CARD_RANKS, PRIMES},
+    common::day07::{compute_hands, Hand, HandType, Player, CARD_RANKS, PRIMES},
     parsers::split,
 };
 
-// too low 251,064,392
+pub static CARD_RANKS2: [char; 13] = [
+    'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A',
+];
+
 fn main() {
     let hands = compute_hands();
     let mut prime_hash_to_hand: HashMap<u64, Hand> = HashMap::new();
@@ -22,16 +26,17 @@ fn main() {
         let line1 = line_res.unwrap();
         let line2 = split(&line1, " ");
 
-        let cards_str = &line2[0];
+        let cards_str1 = &line2[0];
         let bid = u64::from_str_radix(&line2[1], 10).unwrap();
 
         // parse input, compute hash/hand_type
-        let (cards1, prime_hash1) = compute_cards_and_prime_hash(cards_str);
+        let (cards, prime_hash1) = compute_cards_and_prime_hash(cards_str1);
         let hand1 = prime_hash_to_hand[&prime_hash1];
         let player1 = Player {
-            hand_type: hand1.hand_type,
-            cards: cards1,
+            cards_str: cards_str1.to_string(),
             bid,
+            cards,
+            hand_type: hand1.hand_type,
             bit_hash: hand1.bit_hash,
         };
 
@@ -42,14 +47,15 @@ fn main() {
         }
 
         let card_ch = evaluate_wild_card_hand(&player1);
-        let cards_str2 = cards_str.replace("J", &card_ch.to_string());
-        let (cards2, prime_hash2) = compute_cards_and_prime_hash(&cards_str2);
+        let cards_str2 = cards_str1.replace("J", &card_ch.to_string());
+        let (_, prime_hash2) = compute_cards_and_prime_hash(&cards_str2);
         let hand2 = prime_hash_to_hand[&prime_hash2];
         let player2 = Player {
-            hand_type: hand2.hand_type,
-            cards: cards2,
+            cards_str: cards_str1.to_string(), // display the original cards, might be useful for loggin
             bid,
+            cards,
             bit_hash: hand2.bit_hash,
+            hand_type: hand2.hand_type,
         };
         players.push(player2);
     }
@@ -58,7 +64,6 @@ fn main() {
 
     let mut winnings = 0;
     for (i, p) in players.iter().enumerate() {
-        println!("{:?}", p);
         winnings += p.bid * (1 + i as u64);
     }
     println!("{:?}", winnings);
@@ -71,6 +76,11 @@ fn compute_cards_and_prime_hash(cards_str: &String) -> ([usize; 5], u64) {
         for (j, rank) in CARD_RANKS.iter().enumerate() {
             if card == *rank {
                 hash *= PRIMES[j];
+                break;
+            }
+        }
+        for (j, rank) in CARD_RANKS2.iter().enumerate() {
+            if card == *rank {
                 cards[i] = j;
                 break;
             }
@@ -106,7 +116,6 @@ fn evaluate_wild_card_hand(player: &Player) -> char {
     //
     // hc
     // AKQJT -> AAKQJ -> swap high
-
     let card_ch;
 
     // compute highest
@@ -152,9 +161,6 @@ fn evaluate_wild_card_hand(player: &Player) -> char {
         HandType::FiveKind => {
             card_ch = 'A';
         }
-        HandType::FiveAces => {
-            card_ch = 'A';
-        }
     }
     card_ch
 }
@@ -186,4 +192,22 @@ fn build_jack_hash() -> u64 {
         a = a | (1 << 9 + (13 * x));
     }
     a
+}
+
+fn sort_hands(players: &mut Vec<Player>) {
+    players.sort_by(|a, b| {
+        let cmp = a.hand_type.cmp(&b.hand_type);
+        if cmp.is_eq() {
+            // this isn't very fast, but it shouldn't
+            // happen that often (surely)
+            for (i, c1) in a.cards.iter().enumerate() {
+                let c2 = b.cards[i];
+                if c1.cmp(&c2).is_ne() {
+                    return c1.cmp(&c2);
+                }
+            }
+            return cmp::Ordering::Equal;
+        }
+        cmp
+    });
 }
