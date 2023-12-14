@@ -60,6 +60,14 @@ impl Hand {
     }
 }
 
+#[derive(Debug)]
+pub struct Player {
+    pub hand_type: HandType,
+    pub cards: [usize; 5],
+    pub bid: u64,
+    pub bit_hash: u64,
+}
+
 pub fn compute_hands() -> Vec<Hand> {
     // this looks like a lot of work, but there are only 6188 combinations
     //
@@ -177,14 +185,14 @@ pub fn compute_hash(primes: [u64; 13], i: usize, j: usize, k: usize, l: usize, m
     primes[i] * primes[j] * primes[k] * primes[l] * primes[m]
 }
 
-pub fn sort_hands(players: &mut Vec<(Vec<usize>, u64, &HandType)>) {
+pub fn sort_hands(players: &mut Vec<Player>) {
     players.sort_by(|a, b| {
-        let cmp = a.2.cmp(&b.2);
+        let cmp = a.hand_type.cmp(&b.hand_type);
         if cmp.is_eq() {
             // this isn't very fast, but it shouldn't
             // happen that often (surely)
-            for (i, c1) in a.0.iter().enumerate() {
-                let c2 = b.0[i];
+            for (i, c1) in a.cards.iter().enumerate() {
+                let c2 = b.cards[i];
                 if c1.cmp(&c2).is_ne() {
                     return c1.cmp(&c2);
                 }
