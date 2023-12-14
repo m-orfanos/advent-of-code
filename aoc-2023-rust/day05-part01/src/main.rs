@@ -89,6 +89,7 @@ fn main() {
     println!("{}", ans);
 }
 
+// TODO check lifetimes in this file
 fn insert(src_to_dst: &mut Vec<Config>, line: &String) {
     let config = parse_u64s(&line, " ");
     src_to_dst.push(Config {

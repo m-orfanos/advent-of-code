@@ -16,7 +16,7 @@ fn main() {
     println!("{}", ans);
 }
 
-fn find_digit(line: &String) -> u32 {
+fn find_digit(line: &str) -> u32 {
     // using unwrap because there will ALWAYS be a value present
     line.chars()
         .find(|ch| ch.is_digit(10))
@@ -25,7 +25,7 @@ fn find_digit(line: &String) -> u32 {
         .unwrap()
 }
 
-fn rfind_digit(line: &String) -> u32 {
+fn rfind_digit(line: &str) -> u32 {
     // using unwrap because there will ALWAYS be a value present
     line.chars()
         .rev()

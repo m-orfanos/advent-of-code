@@ -9,7 +9,7 @@ use crates::{
     parsers::split,
 };
 
-pub static CARD_RANKS2: [char; 13] = [
+static CARD_RANKS2: [char; 13] = [
     'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A',
 ];
 
@@ -69,6 +69,7 @@ fn main() {
     println!("{:?}", winnings);
 }
 
+// TODO: check lifetimes in this file
 fn compute_cards_and_prime_hash(cards_str: &String) -> ([usize; 5], u64) {
     let mut cards = [0, 0, 0, 0, 0];
     let mut hash = 1;
