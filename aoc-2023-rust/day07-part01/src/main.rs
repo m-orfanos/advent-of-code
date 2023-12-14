@@ -21,7 +21,7 @@ fn main() {
         let line2 = split(&line1, " ");
 
         let cards_str = &line2[0];
-        let bid = u64::from_str_radix(line2[1], 10).unwrap();
+        let bid = u64::from_str_radix(&line2[1], 10).unwrap();
 
         // parse input, compute hash/hand_type
         let mut cards = Vec::new();
