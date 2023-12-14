@@ -100,3 +100,10 @@ version = "0.1.0"
 dependencies = [
  "crates",
 ]
+
+[[package]]
+name = "day07-part02"
+version = "0.1.0"
+dependencies = [
+ "crates",
+]
