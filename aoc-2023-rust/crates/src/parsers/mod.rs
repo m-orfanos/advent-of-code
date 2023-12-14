@@ -1,6 +1,6 @@
 /// calls str::split, trims result and collects into a Vec<String>
-pub fn split<'a>(s: &'a str, pattern: &'a str) -> Vec<&'a str> {
-    s.split(pattern).map(|x| x.trim()).collect()
+pub fn split(s: &str, pattern: &str) -> Vec<String> {
+    s.split(pattern).map(|x| x.trim().to_string()).collect()
 }
 
 /// calls str::split, trims result, parses to i64 and collects into Vec<i64>
