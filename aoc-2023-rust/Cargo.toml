@@ -21,3 +21,6 @@ members = [
   "day07-part02",
   "crates",
 ]
+
+[dependencies]
+clap = { version = "4.4.11", features = ["cargo"] }
