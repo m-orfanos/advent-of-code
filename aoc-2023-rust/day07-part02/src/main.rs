@@ -4,26 +4,20 @@ use std::{
 };
 
 use crates::{
-    common::day07::{compute_hands, sort_hands, Hand, HandType, CARD_RANKS, PRIMES},
+    common::day07::{compute_hands, sort_hands, Hand, HandType, Player, CARD_RANKS, PRIMES},
     parsers::split,
 };
 
-#[derive(Debug)]
-struct Player {
-    hand: Hand,
-    cards_str: String,
-    cards: Vec<usize>,
-}
-
+// too low 251,064,392
 fn main() {
     let hands = compute_hands();
-    let mut hash_to_hand: HashMap<u64, Hand> = HashMap::new();
+    let mut prime_hash_to_hand: HashMap<u64, Hand> = HashMap::new();
     for h in hands {
-        hash_to_hand.insert(h.prime_hash, h);
+        prime_hash_to_hand.insert(h.prime_hash, h);
     }
 
-    let mut players = Vec::new();
     let jack_hash = build_jack_hash();
+    let mut players = Vec::new();
     for line_res in io::stdin().lock().lines() {
         let line1 = line_res.unwrap();
         let line2 = split(&line1, " ");
@@ -32,39 +26,74 @@ fn main() {
         let bid = u64::from_str_radix(&line2[1], 10).unwrap();
 
         // parse input, compute hash/hand_type
-        let player = compute_player_hand(&cards_str, &hash_to_hand);
+        let (cards1, prime_hash1) = compute_cards_and_prime_hash(cards_str);
+        let hand1 = prime_hash_to_hand[&prime_hash1];
+        let player1 = Player {
+            hand_type: hand1.hand_type,
+            cards: cards1,
+            bid,
+            bit_hash: hand1.bit_hash,
+        };
 
-        // evaluate again in case there's a jack
-        evaluate_wild_card_hand(&player, &hash_to_hand, jack_hash);
-        // println!("{:?}", p2.hand);
+        let has_wild_card = hand1.bit_hash & (jack_hash) > 0;
+        if !has_wild_card {
+            players.push(player1);
+            continue;
+        }
 
-        // players.push((p1.hand, bid, player_hand.hand_type));
+        let card_ch = evaluate_wild_card_hand(&player1);
+        let cards_str2 = cards_str.replace("J", &card_ch.to_string());
+        let (cards2, prime_hash2) = compute_cards_and_prime_hash(&cards_str2);
+        let hand2 = prime_hash_to_hand[&prime_hash2];
+        let player2 = Player {
+            hand_type: hand2.hand_type,
+            cards: cards2,
+            bid,
+            bit_hash: hand2.bit_hash,
+        };
+        players.push(player2);
     }
 
     sort_hands(&mut players);
 
     let mut winnings = 0;
     for (i, p) in players.iter().enumerate() {
-        winnings += p.1 * (1 + i as u64);
+        println!("{:?}", p);
+        winnings += p.bid * (1 + i as u64);
     }
     println!("{:?}", winnings);
 }
 
-fn evaluate_wild_card_hand(player: &Player, hash_to_hand: &HashMap<u64, Hand>, jack_hash: u64) {
+fn compute_cards_and_prime_hash(cards_str: &String) -> ([usize; 5], u64) {
+    let mut cards = [0, 0, 0, 0, 0];
+    let mut hash = 1;
+    for (i, card) in cards_str.chars().enumerate() {
+        for (j, rank) in CARD_RANKS.iter().enumerate() {
+            if card == *rank {
+                hash *= PRIMES[j];
+                cards[i] = j;
+                break;
+            }
+        }
+    }
+    (cards, hash)
+}
+
+fn evaluate_wild_card_hand(player: &Player) -> char {
     // jacks act as a wildcard
     // 5k
-    // JJJJJ -> AAAAA -> swap
+    // JJJJJ -> AAAAA -> swap penta
     //
     // 4k
-    // AAAAJ -> AAAAA -> swap
-    // AJJJJ -> AAAAA -> swap
+    // AAAAJ -> AAAAA -> swap quads
+    // AJJJJ -> AAAAA -> swap high
     //
     // fh
-    // AAAJJ -> AAAAA -> swap
-    // AAJJJ -> AAAAA -> swap
+    // AAAJJ -> AAAAA -> swap trips
+    // AAJJJ -> AAAAA -> swap pair
     //
     // 3k
-    // AAAKJ -> AAAKA -> swap 3k
+    // AAAKJ -> AAAKA -> swap trips
     // KAJJJ -> KAAAA -> swap high
     //
     // 2p
@@ -77,59 +106,77 @@ fn evaluate_wild_card_hand(player: &Player, hash_to_hand: &HashMap<u64, Hand>, j
     //
     // hc
     // AKQJT -> AAKQJ -> swap high
-    let has_wild_card = player.hand.bit_hash & (jack_hash) > 0;
-    if !has_wild_card {
-        return;
-    }
+
+    let card_ch;
 
     // compute highest
-    match player.hand.hand_type {
-        HandType::HighCard => (),
-        HandType::OnePair => (),
-        HandType::TwoPair => (),
-        HandType::ThreeKind => {
-            // either JJJAB OR AAAJB
-            let is_jack_trip = (player.hand.bit_hash >> 26) & (1 << 9) > 0;
-
-            let card_rank;
-            let card_ch;
-            if is_jack_trip {
-                // find highest card
-                card_rank = player.hand.bit_hash & 0b1110111111111;
-                card_ch = CARD_RANKS[(64 - card_rank.leading_zeros() - 1) as usize];
-            } else {
-                // find 3k
-                card_rank = (player.hand.bit_hash >> 26) & 0b1110111111111;
-                card_ch = CARD_RANKS[(64 - card_rank.leading_zeros() - 1) as usize];
-            }
-            let cards_str2 = player.cards_str.replace("J", &card_ch.to_string());
-            let player = compute_player_hand(&cards_str2, &hash_to_hand);
-            // return player;
+    match player.hand_type {
+        HandType::HighCard => {
+            card_ch = find_high_rank(player);
         }
-        HandType::FullHouse => (),
-        HandType::FourKind => (),
-        HandType::FiveKind => (),
-        HandType::FiveAces => (),
+        HandType::OnePair => {
+            let is_jack_pair = (player.bit_hash >> 13) & (1 << 9) > 0;
+            if is_jack_pair {
+                card_ch = find_high_rank(player);
+            } else {
+                card_ch = find_pair_rank(player);
+            }
+        }
+        HandType::TwoPair => {
+            card_ch = find_pair_rank(player);
+        }
+        HandType::ThreeKind => {
+            let is_jack_trip = (player.bit_hash >> (1 * 26)) & (1 << 9) > 0;
+            if is_jack_trip {
+                card_ch = find_high_rank(player);
+            } else {
+                card_ch = find_trips_rank(player);
+            }
+        }
+        HandType::FullHouse => {
+            let is_jack_trip = (player.bit_hash >> (2 * 13)) & (1 << 9) > 0;
+            if is_jack_trip {
+                card_ch = find_pair_rank(player);
+            } else {
+                card_ch = find_trips_rank(player);
+            }
+        }
+        HandType::FourKind => {
+            let is_jack_quads = (player.bit_hash >> (3 * 13)) & (1 << 9) > 0;
+            if is_jack_quads {
+                card_ch = find_high_rank(player);
+            } else {
+                card_ch = find_quads_rank(player);
+            }
+        }
+        HandType::FiveKind => {
+            card_ch = 'A';
+        }
+        HandType::FiveAces => {
+            card_ch = 'A';
+        }
     }
+    card_ch
 }
 
-fn compute_player_hand(cards_str: &str, hash_to_hand: &HashMap<u64, Hand>) -> Player {
-    let mut cards = Vec::new();
-    let mut hash = 1;
-    for card in cards_str.chars() {
-        for (j, card_rank) in CARD_RANKS.iter().enumerate() {
-            if card == *card_rank {
-                hash *= PRIMES[j];
-                cards.push(j);
-                break;
-            }
-        }
-    }
-    Player {
-        hand: hash_to_hand[&hash],
-        cards,
-        cards_str: cards_str.to_string(),
-    }
+fn find_high_rank(player: &Player) -> char {
+    let card_rank = player.bit_hash & 0b1110111111111;
+    CARD_RANKS[(64 - card_rank.leading_zeros() - 1) as usize]
+}
+
+fn find_pair_rank(player: &Player) -> char {
+    let card_rank = (player.bit_hash >> (1 * 13)) & 0b1110111111111;
+    CARD_RANKS[(64 - card_rank.leading_zeros() - 1) as usize]
+}
+
+fn find_trips_rank(player: &Player) -> char {
+    let card_rank = (player.bit_hash >> (2 * 13)) & 0b1110111111111;
+    CARD_RANKS[(64 - card_rank.leading_zeros() - 1) as usize]
+}
+
+fn find_quads_rank(player: &Player) -> char {
+    let card_rank = (player.bit_hash >> (3 * 13)) & 0b1110111111111;
+    CARD_RANKS[(64 - card_rank.leading_zeros() - 1) as usize]
 }
 
 fn build_jack_hash() -> u64 {

@@ -1,4 +1,5 @@
 use crates::common::day07::Hand;
+use crates::common::day07::Player;
 use crates::common::day07::CARD_RANKS;
 use crates::common::day07::PRIMES;
 use crates::{
@@ -24,30 +25,32 @@ fn main() {
         let bid = u64::from_str_radix(&line2[1], 10).unwrap();
 
         // parse input, compute hash/hand_type
-        let mut cards = Vec::new();
+        let mut cards = [0, 0, 0, 0, 0];
         let mut hash = 1;
-        for card in cards_str.chars() {
+        for (i, card) in cards_str.chars().enumerate() {
             for (j, rank) in CARD_RANKS.iter().enumerate() {
                 if card == *rank {
                     hash *= PRIMES[j];
-                    cards.push(j);
+                    cards[i] = j;
                     break;
                 }
             }
         }
-        let Hand {
-            bit_hash: _,
-            hand_type,
-            prime_hash: _,
-        }: &Hand = &hash_to_hand[&hash];
-        players.push((cards, bid, hand_type));
+        let hand = hash_to_hand[&hash];
+        let p = Player {
+            hand_type: hand.hand_type,
+            cards,
+            bid,
+            bit_hash: hash,
+        };
+        players.push(p);
     }
 
     sort_hands(&mut players);
 
     let mut winnings = 0;
     for (i, p) in players.iter().enumerate() {
-        winnings += p.1 * (1 + i as u64);
+        winnings += p.bid * (1 + i as u64);
     }
     println!("{:?}", winnings);
 }
