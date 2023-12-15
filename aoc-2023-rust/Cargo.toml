@@ -4,9 +4,5 @@ version = "0.1.0"
 edition = "2021"
 build = "build.rs"
 
-[[bin]]
-name = "d01_01"
-path = "src/bin/d01_01.rs"
-
 [dependencies]
 clap = { version = "4.4.11", features = ["derive"] }
