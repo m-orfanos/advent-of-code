@@ -32,3 +32,7 @@ $ ./aoc <DAY> <PART>
 
 > [!warning]
 > The `<PART>` is TWO digits 01 or 02
+
+## Development
+
+The repository contains vscode debug configurations for every puzzle. Each config passes the puzzle input to the script as an argument. Open the `Run and Debug` view/pane to see them.
