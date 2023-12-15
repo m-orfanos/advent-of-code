@@ -1,4 +1,4 @@
-use crates::parsers::{parse_i64s, split};
+use aoc::parsers::{parse_i64s, split};
 use std::{
     collections::HashMap,
     io::{self, BufRead},

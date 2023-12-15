@@ -1,5 +1,5 @@
-use crates::common::day06::{search_lhs, search_rhs};
-use crates::parsers::{parse_i64, split};
+use aoc::common::day06::{search_lhs, search_rhs};
+use aoc::parsers::{parse_i64, split};
 use std::io::{self, BufRead};
 
 fn main() {

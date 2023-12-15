@@ -2,25 +2,11 @@
 name = "aoc"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
-[workspace]
-members = [
-  "day01-part01",
-  "day01-part02",
-  "day02-part01",
-  "day02-part02",
-  "day03-part01",
-  "day03-part02",
-  "day04-part01",
-  "day04-part02",
-  "day05-part01",
-  "day05-part02",
-  "day06-part01",
-  "day06-part02",
-  "day07-part01",
-  "day07-part02",
-  "crates",
-]
+[[bin]]
+name = "d01_01"
+path = "src/bin/d01_01.rs"
 
 [dependencies]
 clap = { version = "4.4.11", features = ["derive"] }

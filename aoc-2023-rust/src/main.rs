@@ -1,7 +1,6 @@
-mod d01_01;
-mod d01_02;
+// use std::{fs::File, io::BufReader};
 
-use clap::{arg, command, Parser};
+use clap::{Parser};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -17,10 +16,15 @@ struct Cli {
 
 fn main() {
     let cli =  Cli::parse();
+
+    // let filepath = "resources/day01-input-test";
+    // let file = File::open(filepath);
+    // let reader = BufReader::new(file.unwrap());
+
     match cli.day {
         1 => match cli.part {
-            1 => d01_01::solve(),
-            2 => d01_02::solve(),
+            1 => todo!(),
+            2 => todo!(),
             _ => todo!(),
         },
         _ => todo!(),

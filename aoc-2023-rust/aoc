@@ -1,5 +1,5 @@
 #!/bin/bash
-DAY="day$1"
-PART="part$2"
-PUZZLE="$DAY-$PART"
-cargo run -p $PUZZLE < ./resources/$DAY-input
+DAY="$1"
+PART="$2"
+PUZZLE="$DAY"_"$PART"
+cargo run --bin "$PUZZLE" < ./resources/day$DAY-input
