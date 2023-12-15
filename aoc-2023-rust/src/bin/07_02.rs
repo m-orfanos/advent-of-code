@@ -4,7 +4,7 @@ use std::{
     io::{self, BufRead},
 };
 
-use crates::{
+use aoc::{
     common::day07::{compute_hands, Hand, HandType, Player, CARD_RANKS, PRIMES},
     parsers::split,
 };

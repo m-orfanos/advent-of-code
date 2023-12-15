@@ -1,8 +1,8 @@
-use crates::common::day07::Hand;
-use crates::common::day07::Player;
-use crates::common::day07::CARD_RANKS;
-use crates::common::day07::PRIMES;
-use crates::{
+use aoc::common::day07::Hand;
+use aoc::common::day07::Player;
+use aoc::common::day07::CARD_RANKS;
+use aoc::common::day07::PRIMES;
+use aoc::{
     common::day07::{compute_hands, sort_hands},
     parsers::split,
 };
