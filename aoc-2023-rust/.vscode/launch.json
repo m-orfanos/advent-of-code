@@ -1,3 +1,144 @@
 {
-  "configurations": []
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D01 P01",
+      "program": "${workspaceFolder}/target/debug/01_01",
+      "args": [],
+      "stdio": "resources/day01-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D01 P02",
+      "program": "${workspaceFolder}/target/debug/01_02",
+      "args": [],
+      "stdio": "resources/day01-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D02 P01",
+      "program": "${workspaceFolder}/target/debug/02_01",
+      "args": [],
+      "stdio": "resources/day02-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D02 P02",
+      "program": "${workspaceFolder}/target/debug/02_02",
+      "args": [],
+      "stdio": "resources/day02-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D03 P01",
+      "program": "${workspaceFolder}/target/debug/03_01",
+      "args": [],
+      "stdio": "resources/day03-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D03 P02",
+      "program": "${workspaceFolder}/target/debug/03_02",
+      "args": [],
+      "stdio": "resources/day03-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D04 P01",
+      "program": "${workspaceFolder}/target/debug/04_01",
+      "args": [],
+      "stdio": "resources/day04-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D04 P02",
+      "program": "${workspaceFolder}/target/debug/04_02",
+      "args": [],
+      "stdio": "resources/day04-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D05 P01",
+      "program": "${workspaceFolder}/target/debug/05_01",
+      "args": [],
+      "stdio": "resources/day05-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D05 P02",
+      "program": "${workspaceFolder}/target/debug/05_02",
+      "args": [],
+      "stdio": "resources/day05-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D06 P01",
+      "program": "${workspaceFolder}/target/debug/06_01",
+      "args": [],
+      "stdio": "resources/day06-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D06 P02",
+      "program": "${workspaceFolder}/target/debug/06_02",
+      "args": [],
+      "stdio": "resources/day06-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D07 P01",
+      "program": "${workspaceFolder}/target/debug/07_01",
+      "args": [],
+      "stdio": "resources/day06-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "D07 P02",
+      "program": "${workspaceFolder}/target/debug/07_02",
+      "args": [],
+      "stdio": "resources/day06-input",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
 }
