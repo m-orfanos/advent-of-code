@@ -1,5 +1,5 @@
+use aoc::parsers::{parse_i64s, split};
 use std::io::{self, BufRead};
-use aoc::parsers::{split, parse_i64s};
 
 fn main() {
     let mut ans: i64 = 0;
