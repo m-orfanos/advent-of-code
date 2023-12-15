@@ -1,5 +1,5 @@
-use crates::common::day05::ParseMode;
-use crates::parsers::{parse_u64s, split};
+use aoc::common::day05::ParseMode;
+use aoc::parsers::{parse_u64s, split};
 use std::io::{self, BufRead};
 
 struct Config {
