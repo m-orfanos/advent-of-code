@@ -7,6 +7,7 @@ fn main() {
     let mut it = io::stdin().lock().lines();
 
     let instructions = it.next().unwrap().unwrap();
+
     it.next(); // blank line
 
     let mut map: HashMap<String, [String; 2]> = HashMap::new();
@@ -21,20 +22,38 @@ fn main() {
         map.insert(key, [left, right]);
     }
 
-    let mut curr = "AAA";
+    let mut curr_nodes = Vec::new();
+    for k in map.keys() {
+        if k.ends_with("A") {
+            curr_nodes.push(k);
+        }
+    }
+
     let mut instruction_counter = 0;
     let mut cnt = 0;
-    while curr != "ZZZ" {
+    let mut ends_with_z = false;
+    while !ends_with_z {
+        ends_with_z = true;
         if instruction_counter >= instructions.len() {
             instruction_counter = 0;
         }
+
         let instruction = instructions.chars().nth(instruction_counter).unwrap();
         let index = if instruction == 'L' { 0 } else { 1 };
 
-        let nodes = &map[curr];
-        let next = &nodes[index];
+        let mut next_nodes = Vec::new();
+        for curr in curr_nodes.iter() {
+            let nodes: &[String; 2] = &map[*curr];
+            let next = &nodes[index];
+            if !next.ends_with("Z") {
+                ends_with_z = false;
+            }
+            next_nodes.push(next);
+        }
 
-        curr = next;
+        println!("{} {} {} {:?}->{:?}", cnt, instruction_counter, instruction, curr_nodes, next_nodes);
+
+        curr_nodes = next_nodes;
         cnt += 1;
         instruction_counter += 1;
     }

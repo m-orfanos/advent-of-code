@@ -2,4 +2,12 @@
 DAY="$1"
 PART="$2"
 PUZZLE="$DAY"_"$PART"
-cargo run --bin "$PUZZLE" < ./resources/day$DAY-input-test
+
+FILE_INPUT="./resources/day$DAY-input-test"
+
+if [[ "$PUZZLE" == "08_02" ]]
+then
+    FILE_INPUT="./resources/day$DAY-input-test2"
+fi
+
+cargo run --bin "$PUZZLE" < $FILE_INPUT
