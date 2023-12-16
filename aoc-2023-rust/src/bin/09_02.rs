@@ -24,11 +24,11 @@ fn main() {
         // make prediction
         let mut history_prediction = 0;
         for row in pyramid.iter().rev() {
-            println!("{:?} {}", row, history_prediction);
+            // println!("{:?} {}", row, history_prediction);
             history_prediction = row[0] - history_prediction;
         }
 
-        println!("{}\n", history_prediction);
+        // println!("{}\n", history_prediction);
 
         prediction += history_prediction;
     }
