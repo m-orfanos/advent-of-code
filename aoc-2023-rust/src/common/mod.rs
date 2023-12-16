@@ -8,6 +8,7 @@ pub fn div(a: i64, b: i64) -> i64 {
     (a as f64 / b as f64) as i64
 }
 
+/// returns the prime factors for the given number
 fn find_primes(n: i32) -> Vec<i32> {
     // this is horribly inefficient
     let mut t = n;
@@ -33,13 +34,16 @@ fn find_primes(n: i32) -> Vec<i32> {
     primes
 }
 
-fn compute_primes_to_count(primes: Vec<i32>) -> HashMap<i32, i32> {
+/// creates a map from the given vector
+/// the keys are the numbers in the vector,
+/// the values are the number of duplicates
+fn compute_counter(ns: Vec<i32>) -> HashMap<i32, i32> {
     let mut map = HashMap::new();
-    for prime in primes {
-        if map.contains_key(&prime) {
-            map.insert(prime, map.get(&prime).unwrap() + 1);
+    for n in ns {
+        if map.contains_key(&n) {
+            map.insert(n, map.get(&n).unwrap() + 1);
         } else {
-            map.insert(prime, 1);
+            map.insert(n, 1);
         }
     }
     map
@@ -48,15 +52,15 @@ fn compute_primes_to_count(primes: Vec<i32>) -> HashMap<i32, i32> {
 pub fn lcm(ns: Vec<i32>) -> u64 {
     // this is horribly inefficient
     let mut prime_to_count = HashMap::new();
-    for pl in ns {
-        let primes = find_primes(pl);
-        let primes_to_count = compute_primes_to_count(primes);
-        for (prime, cnt1) in primes_to_count {
+    for n in ns {
+        let primes = find_primes(n);
+        let primes_to_count = compute_counter(primes);
+        for (prime, curr) in primes_to_count {
             if prime_to_count.contains_key(&prime) {
-                let cnt = cnt1.max(*prime_to_count.get(&prime).unwrap());
-                prime_to_count.insert(prime, cnt + 0);
+                let next = curr.max(*prime_to_count.get(&prime).unwrap());
+                prime_to_count.insert(prime, next + 0);
             } else {
-                prime_to_count.insert(prime, cnt1 + 0);
+                prime_to_count.insert(prime, curr + 0);
             }
         }
     }
