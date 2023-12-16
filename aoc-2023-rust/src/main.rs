@@ -42,7 +42,7 @@ mod aoc {
         let solutions_reader = BufReader::new(File::open("resources/solutions").unwrap());
         let solutions_str: Vec<_> = solutions_reader.lines().map(|l| l.unwrap()).collect();
 
-        let days = ["01", "02", "03", "04", "05", "06"];
+        let days = ["01", "02", "03", "04", "05", "06", "07"];
         let parts = ["01", "02"];
         for day in days {
             for part in parts {
