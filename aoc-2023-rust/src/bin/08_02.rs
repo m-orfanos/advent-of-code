@@ -43,8 +43,8 @@ fn main() {
         let mut ends_with_z = false;
         while !ends_with_z {
             cnt += 1;
-
             ends_with_z = false;
+
             if instruction_counter >= instructions.len() {
                 instruction_counter = 0;
             }
