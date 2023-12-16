@@ -28,9 +28,10 @@ fn main() {
         if instruction_counter >= instructions.len() {
             instruction_counter = 0;
         }
-        let nodes = &map[curr];
         let instruction = instructions.chars().nth(instruction_counter).unwrap();
         let index = if instruction == 'L' { 0 } else { 1 };
+
+        let nodes = &map[curr];
         let next = &nodes[index];
 
         curr = next;
