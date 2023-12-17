@@ -45,7 +45,59 @@ mod aoc {
 
         let days = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
         let parts = ["01", "02"];
-        let resources_test = HashMap::from([("08_02_01", "2")]);
+
+        let resources: HashMap<&str, &str> = HashMap::from([
+            // format: DAY_PART_FILENAME
+            // day 1 input
+            ("01_01_01", "day01-input-test"),
+            ("01_01_02", "day01-input"),
+            ("01_02_01", "day01-input-test"),
+            ("01_02_02", "day01-input"),
+            // day 2
+            ("02_01_01", "day02-input-test"),
+            ("02_01_02", "day02-input"),
+            ("02_02_01", "day02-input-test"),
+            ("02_02_02", "day02-input"),
+            // day 3
+            ("03_01_01", "day03-input-test"),
+            ("03_01_02", "day03-input"),
+            ("03_02_01", "day03-input-test"),
+            ("03_02_02", "day03-input"),
+            // day 4
+            ("04_01_01", "day04-input-test"),
+            ("04_01_02", "day04-input"),
+            ("04_02_01", "day04-input-test"),
+            ("04_02_02", "day04-input"),
+            // day 5
+            ("05_01_01", "day05-input-test"),
+            ("05_01_02", "day05-input"),
+            ("05_02_01", "day05-input-test"),
+            ("05_02_02", "day05-input"),
+            // day 6
+            ("06_01_01", "day06-input-test"),
+            ("06_01_02", "day06-input"),
+            ("06_02_01", "day06-input-test"),
+            ("06_02_02", "day06-input"),
+            // day 7
+            ("07_01_01", "day07-input-test"),
+            ("07_01_02", "day07-input"),
+            ("07_02_01", "day07-input-test"),
+            ("07_02_02", "day07-input"),
+            // day 8
+            ("08_01_01", "day08-input-test"),
+            ("08_01_02", "day08-input"),
+            ("08_02_01", "day08-input-test2"), // only difference of now...
+            ("08_02_02", "day08-input"),
+            // day 9
+            ("09_01_01", "day09-input-test"),
+            ("09_01_02", "day09-input"),
+            ("09_02_01", "day09-input-test"),
+            ("09_02_02", "day09-input"),
+            // day 10
+            ("10_01_01", "day10-input-test"),
+            ("10_01_02", "day10-input"),
+        ]);
+
         for day in days {
             for part in parts {
                 println!("Day {} Part {}...", day, part);
@@ -55,8 +107,11 @@ mod aoc {
 
                 // test input
                 let k1 = format!("{day}_{part}_01");
-                let with_override = resources_test.get(k1.as_str()).unwrap_or(&"");
-                let path1 = format!("resources/day{day}-input-test{with_override}");
+                let resource1 = resources.get(k1.as_str()).unwrap_or(&"").to_string();
+                if resource1 == "" {
+                    continue;
+                }
+                let path1 = format!("resources/{resource1}");
                 let data1 = read_to_string(path1).unwrap();
                 let solution_str1: Vec<_> = solutions_str
                     .iter()
@@ -71,7 +126,11 @@ mod aoc {
 
                 // puzzle input
                 let k2 = format!("{day}_{part}_02");
-                let path2 = format!("resources/day{day}-input");
+                let resource2 = resources.get(k2.as_str()).unwrap_or(&"").to_string();
+                if resource2 == "" {
+                    continue;
+                }
+                let path2 = format!("resources/{resource2}");
                 let data2 = read_to_string(path2).unwrap();
                 let solution_str2: Vec<_> = solutions_str
                     .iter()
