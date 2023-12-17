@@ -3,6 +3,7 @@ use std::collections::HashMap;
 pub mod day05;
 pub mod day06;
 pub mod day07;
+pub mod day09;
 
 pub fn div(a: i64, b: i64) -> i64 {
     (a as f64 / b as f64) as i64
