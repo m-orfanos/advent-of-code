@@ -45,6 +45,11 @@ fn main() {
 
     // println!("Starting position: ({},{})", start_x, start_y);
 
+    // There are only 2 valid starting states, but
+    // it's impossible to know without checking.
+    // Instead take a "walk" in any of the 4
+    // directions until you hit an "invalid"
+    // state (e.g. a wall, off map, starting line)
     let starting_states = [
         State {
             coordinates: Coordinates {
@@ -84,10 +89,15 @@ fn main() {
         // println!("");
         ans = ans.max(path.len());
     }
+
+    // this is the length of the entire cycle
+    // we only want the half
     println!("{}", ans / 2);
 }
 
 fn walk(state: State, map: &Vec<String>) -> Vec<State> {
+    // given a starting position, walk
+    // along the map as far as possible
     let mut path = vec![];
     path.push(state);
 
@@ -103,6 +113,7 @@ fn walk(state: State, map: &Vec<String>) -> Vec<State> {
 }
 
 fn as_pipe(ch: char) -> Option<Pipe> {
+    // only care about valid routes
     match ch {
         '|' => Some(Pipe::Vertical),
         '-' => Some(Pipe::Horizontal),
@@ -110,7 +121,7 @@ fn as_pipe(ch: char) -> Option<Pipe> {
         'J' => Some(Pipe::BendJ),
         '7' => Some(Pipe::Bend7),
         'F' => Some(Pipe::BendF),
-        _ => None,
+        _ => None, // includes S, the starting position
     }
 }
 
