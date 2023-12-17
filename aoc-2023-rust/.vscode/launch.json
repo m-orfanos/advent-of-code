@@ -126,7 +126,7 @@
       "name": "D07 P01",
       "program": "${workspaceFolder}/target/debug/07_01",
       "args": [],
-      "stdio": "resources/day06-input",
+      "stdio": "resources/day07-input",
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     },
@@ -136,7 +136,7 @@
       "name": "D07 P02",
       "program": "${workspaceFolder}/target/debug/07_02",
       "args": [],
-      "stdio": "resources/day06-input",
+      "stdio": "resources/day07-input",
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     }
