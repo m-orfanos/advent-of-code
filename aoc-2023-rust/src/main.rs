@@ -34,6 +34,7 @@ fn main() {
 #[cfg(test)]
 mod aoc {
     use assert_cmd::Command;
+    use std::collections::HashMap;
     use std::fs::{read_to_string, File};
     use std::io::{BufRead, BufReader};
 
@@ -42,8 +43,9 @@ mod aoc {
         let solutions_reader = BufReader::new(File::open("resources/solutions").unwrap());
         let solutions_str: Vec<_> = solutions_reader.lines().map(|l| l.unwrap()).collect();
 
-        let days = ["01", "02", "03", "04", "05", "06", "07"];
+        let days = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
         let parts = ["01", "02"];
+        let resources_test = HashMap::from([("08_02_01", "2")]);
         for day in days {
             for part in parts {
                 println!("Day {} Part {}...", day, part);
@@ -52,9 +54,10 @@ mod aoc {
                 let mut cmd = Command::cargo_bin(cmd).unwrap();
 
                 // test input
-                let path1 = format!("resources/day{day}-input-test");
-                let data1 = read_to_string(path1).unwrap();
                 let k1 = format!("{day}_{part}_01");
+                let with_override = resources_test.get(k1.as_str()).unwrap_or(&"");
+                let path1 = format!("resources/day{day}-input-test{with_override}");
+                let data1 = read_to_string(path1).unwrap();
                 let solution_str1: Vec<_> = solutions_str
                     .iter()
                     .find(|b| b.starts_with(&k1))
@@ -67,9 +70,9 @@ mod aoc {
                 assert1.success().stdout(format!("{p1}\n"));
 
                 // puzzle input
+                let k2 = format!("{day}_{part}_02");
                 let path2 = format!("resources/day{day}-input");
                 let data2 = read_to_string(path2).unwrap();
-                let k2 = format!("{day}_{part}_02");
                 let solution_str2: Vec<_> = solutions_str
                     .iter()
                     .find(|b| b.starts_with(&k2))
