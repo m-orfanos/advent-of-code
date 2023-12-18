@@ -2,35 +2,27 @@ use std::io::{self, BufRead};
 
 fn main() {
     let mut ans: u32 = 0;
-    for line_res in io::stdin().lock().lines() {
-        let line = line_res.unwrap();
+    for line in io::stdin().lock().lines() {
+        let haystack = line.unwrap();
 
-        let s = find_digit(&line);
-        let e = rfind_digit(&line);
+        let mut calibrations = vec![];
+
+        // parse digits
+        for (i, ch) in haystack.chars().enumerate() {
+            if ch.is_digit(10) {
+                calibrations.push((i, ch.to_digit(10).unwrap()));
+            }
+        }
+
+        calibrations.sort_by(|a, b| a.0.cmp(&b.0));
+
+        // find first and last digits
+        let n = calibrations.first().unwrap();
+        let m = calibrations.last().unwrap();
 
         // build the number
-        // s/e will always be single digit numbers
-        ans += s * 10 + e
+        ans += n.1 * 10 + m.1;
     }
 
     println!("{}", ans);
-}
-
-fn find_digit(line: &str) -> u32 {
-    // using unwrap because there will ALWAYS be a value present
-    line.chars()
-        .find(|ch| ch.is_digit(10))
-        .map(|ch| ch.to_digit(10))
-        .unwrap()
-        .unwrap()
-}
-
-fn rfind_digit(line: &str) -> u32 {
-    // using unwrap because there will ALWAYS be a value present
-    line.chars()
-        .rev()
-        .find(|ch| ch.is_digit(10))
-        .map(|ch| ch.to_digit(10))
-        .unwrap()
-        .unwrap()
 }
