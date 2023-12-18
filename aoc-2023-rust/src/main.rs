@@ -31,6 +31,7 @@ fn main() {
     }
 }
 
+// FIXME simplify below, iterate over a list of (day,part,input,answer) instead of wtv this is...
 #[cfg(test)]
 mod aoc {
     use assert_cmd::Command;
@@ -43,7 +44,9 @@ mod aoc {
         let solutions_reader = BufReader::new(File::open("resources/solutions").unwrap());
         let solutions_str: Vec<_> = solutions_reader.lines().map(|l| l.unwrap()).collect();
 
-        let days = ["01", "02", "03", "04", "05", "06", "07", "08", "09"];
+        let days = [
+            "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
+        ];
         let parts = ["01", "02"];
 
         let resources: HashMap<&str, &str> = HashMap::from([
@@ -86,7 +89,7 @@ mod aoc {
             // day 8
             ("08_01_01", "day08-input-test"),
             ("08_01_02", "day08-input"),
-            ("08_02_01", "day08-input-test2"), // only difference of now...
+            ("08_02_01", "day08-input-test2"), // only difference for now...
             ("08_02_02", "day08-input"),
             // day 9
             ("09_01_01", "day09-input-test"),
@@ -96,21 +99,22 @@ mod aoc {
             // day 10
             ("10_01_01", "day10-input-test"),
             ("10_01_02", "day10-input"),
+            // day 11
+            ("11_01_01", "day11-input-test"),
+            ("11_01_02", "day11-input"),
         ]);
 
         for day in days {
             for part in parts {
-                println!("Day {} Part {}...", day, part);
-
-                let cmd = format!("{day}_{part}");
-                let mut cmd = Command::cargo_bin(cmd).unwrap();
-
                 // test input
                 let k1 = format!("{day}_{part}_01");
                 let resource1 = resources.get(k1.as_str()).unwrap_or(&"").to_string();
                 if resource1 == "" {
                     continue;
                 }
+
+                println!("Day {} Part {}...", day, part);
+
                 let path1 = format!("resources/{resource1}");
                 let data1 = read_to_string(path1).unwrap();
                 let solution_str1: Vec<_> = solutions_str
@@ -121,6 +125,9 @@ mod aoc {
                     .collect();
                 let p1 = solution_str1[1].to_string();
 
+                // launch command
+                let cmd = format!("{day}_{part}");
+                let mut cmd = Command::cargo_bin(cmd).unwrap();
                 let assert1 = cmd.write_stdin(data1).assert();
                 assert1.success().stdout(format!("{p1}\n"));
 
@@ -140,9 +147,11 @@ mod aoc {
                     .collect();
                 let p2 = solution_str2[1].to_string();
 
+                // launch command
                 let assert2 = cmd.write_stdin(data2).assert();
                 assert2.success().stdout(format!("{p2}\n"));
             }
+            println!("");
         }
     }
 }
