@@ -1,110 +1,50 @@
 use std::io::{self, BufRead};
 
-struct EnginePart {
-    number: u32,
-    row: i32,
-    cols: Vec<usize>,
-}
-
-struct Symbol {
-    // ch: char, // might be useful in part 2, it was not
-    row: i32,
-    col: usize,
-}
-
 fn main() {
-    let mut parts: Vec<EnginePart> = Vec::new();
-    let mut symbols: Vec<Symbol> = Vec::new();
+    let mut parts: Vec<(u32, Vec<(i32, i32)>)> = vec![];
+    let mut symbols: Vec<(i32, i32)> = vec![];
 
-    // keep track of the line number
-    // visualize input as a matrix with <r> rows and <c> columns
-    let mut row = -1;
+    for (i, input) in io::stdin().lock().lines().enumerate() {
+        let line = input.unwrap();
 
-    // parse all part numbers and symbols
-    // while keeping track of their coordinates
-    for line_res in io::stdin().lock().lines() {
-        let line = line_res.unwrap();
-        row += 1;
-
-        let mut number = 0;
-        let mut is_parsing_digits = false;
-        let mut cols: Vec<usize> = Vec::new();
-
-        for (col, ch) in line.char_indices() {
+        let mut coords = vec![];
+        let mut n = 0;
+        for (j, ch) in line.chars().enumerate() {
             if ch.is_digit(10) {
-                // build number char by char
-                is_parsing_digits = true;
-                number = number * 10 + ch.to_digit(10).unwrap();
-                cols.push(col);
+                n = n * 10 + ch.to_digit(10).unwrap();
+                coords.push((i as i32, j as i32));
             } else {
-                // matched a symbol
-                if is_parsing_digits {
-                    // was building a number
-                    parts.push(EnginePart {
-                        number,
-                        row,
-                        cols: cols.clone(),
-                    });
-                    number = 0;
-                    cols = Vec::new();
+                if ch == '*' {
+                    symbols.push((i as i32, j as i32));
                 }
-                is_parsing_digits = false;
-                match ch {
-                    '*' => symbols.push(Symbol { row, col }),
-                    _ => (),
+                if n > 0 {
+                    parts.push((n, coords));
+                    // reset
+                    coords = vec![];
+                    n = 0;
                 }
             }
         }
 
-        // part number is at the end of the input
-        if is_parsing_digits {
-            parts.push(EnginePart {
-                number,
-                row,
-                cols: cols.clone(),
-            });
+        if n > 0 {
+            // edge of map
+            parts.push((n, coords));
         }
     }
 
-    // calculate sum of gear ratios
     let mut ans = 0;
-
-    for Symbol {
-        // ch: _,
-        row: srow,
-        col: scol,
-    } in symbols
-    {
-        let mut gear_ratio = 1;
-        let mut cnt = 0;
-
-        for EnginePart {
-            number: pnumber,
-            row: prow,
-            cols: pcols,
-        } in &parts
-        {
-            if srow < *prow - 1 {
-                // symbol is at least 2 rows above part
-                // no remaining parts near symbol
-                break;
-            }
-            if srow > *prow + 1 {
-                // symbol is at least 2 rows below part
-                continue;
-            }
-            for pcol in pcols {
-                if scol - 1 <= *pcol && *pcol <= scol + 1 {
-                    // part is adjacent to symbol
-                    cnt += 1;
-                    gear_ratio *= pnumber;
-                    break;
+    for (sx, sy) in symbols {
+        let mut nbs = vec![];
+        'next: for part in &parts {
+            for (px, py) in &part.1 {
+                if (px - 1) <= sx && sx <= (px + 1) && (py - 1) <= sy && sy <= (py + 1) {
+                    nbs.push(part.0);
+                    continue 'next;
                 }
             }
         }
-
-        if cnt > 1 {
-            ans += gear_ratio;
+        if nbs.len() == 2 {
+            ans = ans + nbs.iter().fold(1, |a, b| a * b);
         }
     }
 
