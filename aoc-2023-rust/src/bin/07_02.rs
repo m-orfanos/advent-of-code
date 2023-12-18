@@ -69,8 +69,7 @@ fn main() {
     println!("{:?}", winnings);
 }
 
-// TODO: check lifetimes in this file
-fn compute_cards_and_prime_hash(cards_str: &String) -> ([usize; 5], u64) {
+fn compute_cards_and_prime_hash(cards_str: &str) -> ([usize; 5], u64) {
     let mut cards = [0, 0, 0, 0, 0];
     let mut hash = 1;
     for (i, card) in cards_str.chars().enumerate() {
