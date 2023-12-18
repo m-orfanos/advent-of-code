@@ -58,13 +58,13 @@ fn main() {
     fill_missing_ranges(&mut temp_to_hum);
     fill_missing_ranges(&mut hum_to_loc);
 
-    let soils = find_next(&seeds, seed_to_soil);
-    let ferts = find_next(&soils, soil_to_fert);
-    let waters = find_next(&ferts, fert_to_water);
-    let lights = find_next(&waters, water_to_light);
-    let temps = find_next(&lights, light_to_temp);
-    let hums = find_next(&temps, temp_to_hum);
-    let locs = find_next(&hums, hum_to_loc);
+    let soils = find_next(&seeds, &seed_to_soil);
+    let ferts = find_next(&soils, &soil_to_fert);
+    let waters = find_next(&ferts, &fert_to_water);
+    let lights = find_next(&waters, &water_to_light);
+    let temps = find_next(&lights, &light_to_temp);
+    let hums = find_next(&temps, &temp_to_hum);
+    let locs = find_next(&hums, &hum_to_loc);
 
     // calculate result
     let mut ans = u64::MAX;
@@ -77,17 +77,16 @@ fn main() {
     println!("{:?}", ans);
 }
 
-// TODO: check lifetimes in this file
-fn insert(line: &String, src_to_dst: &mut Vec<(u64, u64, u64)>) {
+fn insert(line: &str, src_to_dst: &mut Vec<(u64, u64, u64)>) {
     let config = parse_u64s(line, " ");
     src_to_dst.push((config[1], config[0], config[2]));
 }
 
-fn parse_seeds(line: &String) -> Vec<u64> {
+fn parse_seeds(line: &str) -> Vec<u64> {
     parse_u64s(&split(&line, ":")[1], " ")
 }
 
-fn find_next(srcs: &Vec<(u64, u64)>, src_to_dst: Vec<(u64, u64, u64)>) -> Vec<(u64, u64)> {
+fn find_next(srcs: &Vec<(u64, u64)>, src_to_dst: &Vec<(u64, u64, u64)>) -> Vec<(u64, u64)> {
     // traverse the various mappings and
     // return the next inputs, which are fed
     // forward to the next mappings, etc.
@@ -95,7 +94,7 @@ fn find_next(srcs: &Vec<(u64, u64)>, src_to_dst: Vec<(u64, u64, u64)>) -> Vec<(u
     for src in srcs {
         // reminder: there are no holes in the mappings' ranges
         // ranges must be continuous
-        for s2s in &src_to_dst {
+        for s2s in src_to_dst {
             // attempt to find where the src intersects the mapping
             let x = find_intersection(s2s.0, s2s.0 + s2s.2, src.0, src.0 + src.1);
             match x {

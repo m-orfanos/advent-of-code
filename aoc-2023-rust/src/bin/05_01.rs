@@ -1,4 +1,4 @@
-use aoc::common::day05::ParseMode;
+use aoc::common::day05::{get_mode, ParseMode};
 use aoc::parsers::{parse_u64s, split};
 use std::io::{self, BufRead};
 
@@ -46,27 +46,7 @@ fn main() {
             // determine what should be parsed next
             // empty lines are ignored
             ParseMode::Pending => {
-                if line.is_empty() {
-                    mode = ParseMode::Pending;
-                } else if line.starts_with("seeds") {
-                    mode = ParseMode::Seeds;
-                } else if line.starts_with("seed-to-soil") {
-                    mode = ParseMode::SeedToSoil;
-                } else if line.starts_with("soil-to-fertilizer") {
-                    mode = ParseMode::SoilToFertilizer;
-                } else if line.starts_with("fertilizer-to-water") {
-                    mode = ParseMode::FertilizerToWater;
-                } else if line.starts_with("water-to-light") {
-                    mode = ParseMode::WaterToLight;
-                } else if line.starts_with("light-to-temperature") {
-                    mode = ParseMode::LightToTemperature;
-                } else if line.starts_with("temperature-to-humidity") {
-                    mode = ParseMode::TemperatureToHumidity;
-                } else if line.starts_with("humidity-to-location") {
-                    mode = ParseMode::HumidityToLocation;
-                } else {
-                    mode = ParseMode::Pending;
-                }
+                mode = get_mode(line);
             }
         }
     }
@@ -89,8 +69,7 @@ fn main() {
     println!("{}", ans);
 }
 
-// TODO check lifetimes in this file
-fn insert(src_to_dst: &mut Vec<Config>, line: &String) {
+fn insert(src_to_dst: &mut Vec<Config>, line: &str) {
     let config = parse_u64s(&line, " ");
     src_to_dst.push(Config {
         src: config[1],
@@ -99,13 +78,13 @@ fn insert(src_to_dst: &mut Vec<Config>, line: &String) {
     });
 }
 
-fn parse_seeds(line: &String) -> Vec<u64> {
+fn parse_seeds(line: &str) -> Vec<u64> {
     parse_u64s(&split(&line, ":")[1], " ")
 }
 
-fn find_next(seed: u64, cx: &Vec<Config>) -> u64 {
-    let mut needle = seed;
-    for c in cx {
+fn find_next(src: u64, src_to_dst: &Vec<Config>) -> u64 {
+    let mut needle = src;
+    for c in src_to_dst {
         if needle < c.src {
             continue;
         }
