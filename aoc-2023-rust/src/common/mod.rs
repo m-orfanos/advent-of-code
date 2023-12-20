@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 pub mod day05;
 pub mod day06;
@@ -77,6 +77,43 @@ pub fn lcm(ns: Vec<i32>) -> u64 {
     let mut ans: u64 = 1;
     for lcm in lcms {
         ans *= lcm as u64;
+    }
+    ans
+}
+
+pub fn transpose(xss: &Vec<Vec<String>>) -> Vec<Vec<String>> {
+    if xss.is_empty() {
+        return vec![];
+    }
+
+    let mut ans: Vec<Vec<String>> = vec![];
+    for i in 0..xss[0].len() {
+        ans.push(vec![]);
+        for _ in 0..xss.len() {
+            ans[i].push("".to_string());
+        }
+    }
+
+    for i in 0..xss.len() {
+        for j in 0..xss[i].len() {
+            ans[j][i] = xss[i][j].to_string();
+        }
+    }
+
+    ans
+}
+
+pub fn intersection(xss: Vec<Vec<(usize, usize)>>) -> Vec<(usize, usize)> {
+    if xss.is_empty() {
+        return vec![];
+    }
+    let mut ans: Vec<(usize, usize)> = xss[0].clone();
+    for xs in xss {
+        let curr: HashSet<(usize, usize)> = xs.into_iter().collect();
+        ans = curr
+            .intersection(&ans.into_iter().collect())
+            .map(|i| *i)
+            .collect::<Vec<_>>();
     }
     ans
 }
