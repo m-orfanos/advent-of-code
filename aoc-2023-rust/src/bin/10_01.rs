@@ -15,8 +15,6 @@ fn main() {
         map.push(line.trim().to_string());
     }
 
-    // println!("Starting position: ({},{})", start_x, start_y);
-
     // There are only 2 valid starting states, but
     // it's impossible to know without checking.
     // Instead take a "walk" in any of the 4
@@ -25,29 +23,29 @@ fn main() {
     let starting_states = [
         State {
             coordinates: Coordinates {
-                x: start_x as i32,
-                y: start_y as i32 - 1,
+                x: start_x,
+                y: start_y.checked_sub(1).unwrap(),
             },
             direction: Direction::North,
         },
         State {
             coordinates: Coordinates {
-                x: start_x as i32 + 1,
-                y: start_y as i32,
+                x: start_x + 1,
+                y: start_y,
             },
             direction: Direction::East,
         },
         State {
             coordinates: Coordinates {
-                x: start_x as i32 - 1,
-                y: start_y as i32,
+                x: start_x.checked_sub(1).unwrap(),
+                y: start_y,
             },
             direction: Direction::West,
         },
         State {
             coordinates: Coordinates {
-                x: start_x as i32,
-                y: start_y as i32 + 1,
+                x: start_x,
+                y: start_y + 1,
             },
             direction: Direction::South,
         },
@@ -55,10 +53,7 @@ fn main() {
 
     let mut ans = 0;
     for state in starting_states {
-        // println!("Start: {:?}", state);
         let path = walk(state, &map);
-        // println!("NB Steps: {}", path.len());
-        // println!("");
         ans = ans.max(path.len());
     }
 
