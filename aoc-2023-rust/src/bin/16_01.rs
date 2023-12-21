@@ -8,8 +8,6 @@ fn main() {
     let mut grid = vec![];
     for input in io::stdin().lock().lines() {
         let line = input.unwrap();
-        // do something with line
-
         let row: Vec<(String, u64, u64)> = line.chars().map(|ch| (ch.to_string(), 0, 0)).collect();
         grid.push(row);
     }
@@ -29,6 +27,7 @@ fn main() {
         (Direction::West, 0b1000),
     ]);
 
+    // walk along the grid
     let mut paths = Vec::from([(0, 0, Direction::East)]);
     while paths.len() > 0 {
         let (x, y, d) = paths.pop().unwrap();
@@ -82,8 +81,6 @@ fn main() {
             vec![]
         };
 
-        // println!("{} {} {:?} {} {:?}", x, y, d, tile, next_paths);
-
         for (dx, dy, nextd) in next_paths {
             let xnext = (x as i32 + dx) as usize;
             let ynext = (y as i32 + dy) as usize;
@@ -95,15 +92,11 @@ fn main() {
 
     let mut ans = 0;
     for row in grid {
-        for (_tile, state, _) in row {
+        for (_, state, _) in row {
             if state == 1 {
                 ans += 1;
-                //     print!("#")
-                // } else {
-                //     print!(".");
             }
         }
-        // println!("");
     }
     println!("{}", ans);
 }
