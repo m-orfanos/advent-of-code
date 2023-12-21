@@ -1,6 +1,7 @@
 use regex::Regex;
 use std::io::{self, BufRead};
 
+// TODO improve performance
 fn main() {
     let mut ans = 0;
 
