@@ -1,5 +1,6 @@
 use std::{
-    collections::{HashMap, HashSet},
+    cmp::Reverse,
+    collections::{BinaryHeap, HashMap},
     io::{self, BufRead},
 };
 
@@ -10,7 +11,7 @@ struct Tile {
     cost: i32,
 }
 
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy)]
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, PartialOrd, Ord)]
 enum Direction {
     North,
     East,
@@ -18,7 +19,7 @@ enum Direction {
     West,
 }
 
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy)]
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, PartialOrd, Ord)]
 struct Node {
     x: usize,
     y: usize,
@@ -51,21 +52,6 @@ fn h(neighbor: &Tile, goal: &Tile) -> i32 {
 
 fn d(neighbor: &Tile) -> i32 {
     neighbor.cost
-}
-
-fn find_min_f_score(open_nodes: &HashSet<Node>, f_scores: &HashMap<Node, i32>) -> Node {
-    let mut ns = vec![];
-    for n in open_nodes {
-        let score = f_scores[n];
-        ns.push((score, n.x, n.y, n.direction, n.consecutive));
-    }
-    ns.sort_by(|a, b| a.0.cmp(&b.0));
-    Node {
-        x: ns[0].1,
-        y: ns[0].2,
-        direction: ns[0].3,
-        consecutive: ns[0].4,
-    }
 }
 
 fn get_neighbors(node: &Node, rows: usize, cols: usize) -> Vec<Node> {
@@ -133,47 +119,50 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
     let rows = grid.len();
     let cols = grid[0].len();
 
-    let mut open_nodes = HashSet::new();
+    // stores "f-scores", i.e. heat loss estimates
+    // this is a max-heap, need to use inverse
+    let mut open_nodes = BinaryHeap::with_capacity(1e6 as usize);
+
+    // note the difference with the "classic" A-star algorithm,
+    // there are 4 parameters instead of only coordinates
     let start_node = Node {
         x: start.x,
         y: start.y,
         direction: Direction::East,
         consecutive: 0,
     };
-    open_nodes.insert(start_node);
+    let start_f_score = h(&grid[start.x][start.y], &goal);
+    open_nodes.push(Reverse((start_f_score, start_node)));
 
     let mut came_from = HashMap::new();
     let mut neighbor_nodes = HashMap::new();
 
+    // tracks heat loss
     let mut g_scores = HashMap::new();
     g_scores.insert(start_node, 0);
 
-    let mut f_scores = HashMap::new();
-    f_scores.insert(start_node, h(&grid[start.x][start.y], &goal));
-
+    // walk across map
     while !open_nodes.is_empty() {
-        let curr = find_min_f_score(&open_nodes, &f_scores);
+        // retrieve lowest f-score
+        let Reverse((_, curr)) = open_nodes.pop().unwrap();
+
         if curr.x == goal.x && curr.y == goal.y {
+            // reached the goal
             return *g_scores.get(&curr).unwrap();
         }
 
-        open_nodes.remove(&curr);
-
+        // visit neighbors
         let neighbors = neighbor_nodes
             .entry(curr)
             .or_insert_with(|| get_neighbors(&curr, rows, cols));
         for n in neighbors {
-            // "distance" from start to the neighbor through current
             let tmp_g_score = g_scores[&curr] + d(&grid[n.x][n.y]);
             let g_score_neighbor = g_scores.get(n).unwrap_or(&i32::MAX);
             if tmp_g_score < *g_score_neighbor {
                 // found better path
                 came_from.insert(*n, curr);
                 g_scores.insert(*n, tmp_g_score);
-                f_scores.insert(*n, tmp_g_score + h(&grid[n.x][n.y], &goal));
-                if !open_nodes.contains(&n) {
-                    open_nodes.insert(*n);
-                }
+                open_nodes.push(Reverse((tmp_g_score + h(&grid[n.x][n.y], &goal), *n)));
             }
         }
     }
