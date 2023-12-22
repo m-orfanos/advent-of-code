@@ -4,30 +4,37 @@ use std::{
     io::{self, BufRead},
 };
 
+use num_complex::Complex;
+
 struct Tile {
     x: usize,
     y: usize,
     cost: i32,
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-enum Direction {
-    North,
-    East,
-    South,
-    West,
-}
-
-#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
 struct Node {
-    // order of fields is important bc of the binary heap
-    f_score: i32,
-    x: usize,
-    y: usize,
-    direction: Direction,
+    xy: Complex<i32>,
+    direction: Complex<i32>,
     consecutive: i32,
     g_score: Option<i32>,
+    f_score: i32,
 }
+
+impl Ord for Node {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.f_score.cmp(&other.f_score)
+    }
+}
+
+impl PartialOrd for Node {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.f_score.partial_cmp(&other.f_score)
+    }
+}
+
+const ROTATE_CLOCKWISE: Complex<i32> = Complex::new(0, 1);
+const ROTATE_ANTI_CLOCKWISE: Complex<i32> = Complex::new(0, -1);
 
 fn main() {
     let mut grid = vec![];
@@ -57,94 +64,80 @@ fn d(neighbor: &Tile) -> i32 {
 }
 
 fn get_neighbors(
-    x: usize,
-    y: usize,
-    direction: Direction,
+    pos: Complex<i32>,
+    dir: Complex<i32>,
     consecutive: i32,
-    rows: usize,
-    cols: usize,
+    rows: i32,
+    cols: i32,
 ) -> Vec<Node> {
+    fn maybe_push(
+        p: Complex<i32>,
+        d: Complex<i32>,
+        c: i32,
+        v: &mut Vec<Node>,
+        rows: i32,
+        cols: i32,
+    ) {
+        if 0 <= p.re && p.re < rows && 0 <= p.im && p.im < cols {
+            v.push(Node {
+                xy: p,
+                direction: d,
+                consecutive: c,
+                g_score: None,
+                f_score: 0,
+            });
+        }
+    }
+
+    // check neighbors
+    // there are 4 neighbors, but we only care about at most 3 of them
+    // 1) ignore if moving in the opposite direction we're coming from
+    // 2) ignore if moving in the same direction 3 times
+    // 3) ignore falling off map
+    //
+    // we model the coordinates and direction as complex numbers to
+    // take advantage of complex arithmetic
+
     let mut ans = vec![];
-    if x > 0 && direction != Direction::South {
-        let nc = get_next_consecutive(direction, consecutive, Direction::North);
-        if nc >= 0 {
-            ans.push(Node {
-                f_score: 0,
-                x: x - 1,
-                y,
-                direction: Direction::North,
-                consecutive: nc,
-                g_score: None,
-            });
-        }
+
+    // same direction
+    let dir1 = dir;
+    let pos1 = pos + dir1;
+    if consecutive < 2 {
+        maybe_push(pos1, dir1, consecutive + 1, &mut ans, rows, cols);
     }
-    if y > 0 && direction != Direction::East {
-        let nc = get_next_consecutive(direction, consecutive, Direction::West);
-        if nc >= 0 {
-            ans.push(Node {
-                f_score: 0,
-                x,
-                y: y - 1,
-                direction: Direction::West,
-                consecutive: nc,
-                g_score: None,
-            });
-        }
-    }
-    if x < rows - 1 && direction != Direction::North {
-        let nc = get_next_consecutive(direction, consecutive, Direction::South);
-        if nc >= 0 {
-            ans.push(Node {
-                f_score: 0,
-                x: x + 1,
-                y,
-                direction: Direction::South,
-                consecutive: nc,
-                g_score: None,
-            });
-        }
-    }
-    if y < cols - 1 && direction != Direction::West {
-        let nc = get_next_consecutive(direction, consecutive, Direction::East);
-        if nc >= 0 {
-            ans.push(Node {
-                f_score: 0,
-                x,
-                y: y + 1,
-                direction: Direction::East,
-                consecutive: nc,
-                g_score: None,
-            });
-        }
-    }
+
+    // direction 90d
+    let dir2 = dir * ROTATE_CLOCKWISE;
+    let pos2 = pos + dir2;
+    maybe_push(pos2, dir2, 0, &mut ans, rows, cols);
+
+    // direction 180d
+    // skipped since we would be backtracking
+
+    // direction 270d
+    let dir4 = dir * ROTATE_ANTI_CLOCKWISE;
+    let pos4 = pos + dir4;
+    maybe_push(pos4, dir4, 0, &mut ans, rows, cols);
+
     ans
 }
 
-fn get_next_consecutive(direction: Direction, consecutive: i32, next_direction: Direction) -> i32 {
-    if direction == next_direction {
-        // zero-indexed
-        if consecutive == 2 {
-            return -1;
-        } else {
-            return consecutive + 1;
-        }
-    }
-    0
-}
-
 fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
-    let rows = grid.len();
-    let cols = grid[0].len();
+    let rows = grid.len() as i32;
+    let cols = grid[0].len() as i32;
 
     let mut neighbor_nodes = HashMap::new();
 
     let start_node = Node {
-        f_score: h(&grid[start.x][start.y], &goal),
-        x: start.x,
-        y: start.y,
-        direction: Direction::East,
+        xy: Complex {
+            re: start.x as i32,
+            im: start.y as i32,
+        },
+        direction: Complex { re: 1, im: 0 },
         consecutive: 0,
         g_score: Some(0),
+        f_score: h(&grid[start.x as usize][start.y as usize], &goal),
     };
 
     let mut open_nodes = BinaryHeap::with_capacity(1e6 as usize);
@@ -155,7 +148,7 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
         // retrieve node with the lowest f-score
         let Reverse(curr) = open_nodes.pop().unwrap();
 
-        if curr.x == goal.x && curr.y == goal.y {
+        if curr.xy.re == goal.x as i32 && curr.xy.im == goal.y as i32 {
             // reached the goal
             return curr.g_score.unwrap();
         }
@@ -164,17 +157,17 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
         // note the difference with the "classic" A-star algorithm,
         // there are 4 parameters instead of only xy-coordinates
         let neighbors = neighbor_nodes
-            .entry((curr.x, curr.y, curr.direction, curr.consecutive))
+            .entry((curr.xy, curr.direction, curr.consecutive))
             .or_insert_with(|| {
-                get_neighbors(curr.x, curr.y, curr.direction, curr.consecutive, rows, cols)
+                get_neighbors(curr.xy, curr.direction, curr.consecutive, rows, cols)
             });
         for n in neighbors {
-            let tmp_g_score = curr.g_score.unwrap() + d(&grid[n.x][n.y]);
+            let tmp_g_score = curr.g_score.unwrap() + d(&grid[n.xy.re as usize][n.xy.im as usize]);
             let g_score_neighbor = n.g_score.unwrap_or(i32::MAX);
             if tmp_g_score < g_score_neighbor {
                 // found better path
                 n.g_score = Some(tmp_g_score);
-                n.f_score = tmp_g_score + h(&grid[n.x][n.y], &goal);
+                n.f_score = tmp_g_score + h(&grid[n.xy.re as usize][n.xy.im as usize], &goal);
                 open_nodes.push(Reverse(*n));
             }
         }
