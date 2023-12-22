@@ -4,14 +4,13 @@ use std::{
     io::{self, BufRead},
 };
 
-#[derive(Debug)]
 struct Tile {
     x: usize,
     y: usize,
     cost: i32,
 }
 
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 enum Direction {
     North,
     East,
@@ -19,8 +18,10 @@ enum Direction {
     West,
 }
 
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 struct Node {
+    // order of fields is important bc of the binary heap
+    f_score: i32,
     x: usize,
     y: usize,
     direction: Direction,
@@ -68,6 +69,7 @@ fn get_neighbors(
         let nc = get_next_consecutive(direction, consecutive, Direction::North);
         if nc >= 0 {
             ans.push(Node {
+                f_score: 0,
                 x: x - 1,
                 y,
                 direction: Direction::North,
@@ -80,6 +82,7 @@ fn get_neighbors(
         let nc = get_next_consecutive(direction, consecutive, Direction::West);
         if nc >= 0 {
             ans.push(Node {
+                f_score: 0,
                 x,
                 y: y - 1,
                 direction: Direction::West,
@@ -92,6 +95,7 @@ fn get_neighbors(
         let nc = get_next_consecutive(direction, consecutive, Direction::South);
         if nc >= 0 {
             ans.push(Node {
+                f_score: 0,
                 x: x + 1,
                 y,
                 direction: Direction::South,
@@ -104,6 +108,7 @@ fn get_neighbors(
         let nc = get_next_consecutive(direction, consecutive, Direction::East);
         if nc >= 0 {
             ans.push(Node {
+                f_score: 0,
                 x,
                 y: y + 1,
                 direction: Direction::East,
@@ -131,28 +136,24 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
     let rows = grid.len();
     let cols = grid[0].len();
 
-    // stores "f-scores", i.e. heat loss estimates
-    // this is a max-heap, need to use inverse
-    let mut open_nodes = BinaryHeap::with_capacity(1e6 as usize);
+    let mut neighbor_nodes = HashMap::new();
 
-    // note the difference with the "classic" A-star algorithm,
-    // there are 4 parameters instead of only coordinates
     let start_node = Node {
+        f_score: h(&grid[start.x][start.y], &goal),
         x: start.x,
         y: start.y,
         direction: Direction::East,
         consecutive: 0,
         g_score: Some(0),
     };
-    let start_f_score = h(&grid[start.x][start.y], &goal);
-    open_nodes.push(Reverse((start_f_score, start_node)));
 
-    let mut neighbor_nodes = HashMap::new();
+    let mut open_nodes = BinaryHeap::with_capacity(1e6 as usize);
+    open_nodes.push(Reverse(start_node));
 
     // walk across map
     while !open_nodes.is_empty() {
-        // retrieve lowest f-score
-        let Reverse((_, curr)) = open_nodes.pop().unwrap();
+        // retrieve node with the lowest f-score
+        let Reverse(curr) = open_nodes.pop().unwrap();
 
         if curr.x == goal.x && curr.y == goal.y {
             // reached the goal
@@ -160,6 +161,8 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
         }
 
         // visit neighbors
+        // note the difference with the "classic" A-star algorithm,
+        // there are 4 parameters instead of only xy-coordinates
         let neighbors = neighbor_nodes
             .entry((curr.x, curr.y, curr.direction, curr.consecutive))
             .or_insert_with(|| {
@@ -171,7 +174,8 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
             if tmp_g_score < g_score_neighbor {
                 // found better path
                 n.g_score = Some(tmp_g_score);
-                open_nodes.push(Reverse((tmp_g_score + h(&grid[n.x][n.y], &goal), *n)));
+                n.f_score = tmp_g_score + h(&grid[n.x][n.y], &goal);
+                open_nodes.push(Reverse(*n));
             }
         }
     }
