@@ -24,7 +24,8 @@ struct Node {
     x: usize,
     y: usize,
     direction: Direction,
-    consecutive: i8,
+    consecutive: i32,
+    g_score: Option<i32>,
 }
 
 fn main() {
@@ -54,62 +55,73 @@ fn d(neighbor: &Tile) -> i32 {
     neighbor.cost
 }
 
-fn get_neighbors(node: &Node, rows: usize, cols: usize) -> Vec<Node> {
+fn get_neighbors(
+    x: usize,
+    y: usize,
+    direction: Direction,
+    consecutive: i32,
+    rows: usize,
+    cols: usize,
+) -> Vec<Node> {
     let mut ans = vec![];
-    if node.x > 0 && node.direction != Direction::South {
-        let consecutive = get_consecutive(node, Direction::North);
-        if consecutive >= 0 {
+    if x > 0 && direction != Direction::South {
+        let nc = get_next_consecutive(direction, consecutive, Direction::North);
+        if nc >= 0 {
             ans.push(Node {
-                x: node.x - 1,
-                y: node.y,
+                x: x - 1,
+                y,
                 direction: Direction::North,
-                consecutive,
+                consecutive: nc,
+                g_score: None,
             });
         }
     }
-    if node.y > 0 && node.direction != Direction::East {
-        let consecutive = get_consecutive(node, Direction::West);
-        if consecutive >= 0 {
+    if y > 0 && direction != Direction::East {
+        let nc = get_next_consecutive(direction, consecutive, Direction::West);
+        if nc >= 0 {
             ans.push(Node {
-                x: node.x,
-                y: node.y - 1,
+                x,
+                y: y - 1,
                 direction: Direction::West,
-                consecutive,
+                consecutive: nc,
+                g_score: None,
             });
         }
     }
-    if node.x < rows - 1 && node.direction != Direction::North {
-        let consecutive = get_consecutive(node, Direction::South);
-        if consecutive >= 0 {
+    if x < rows - 1 && direction != Direction::North {
+        let nc = get_next_consecutive(direction, consecutive, Direction::South);
+        if nc >= 0 {
             ans.push(Node {
-                x: node.x + 1,
-                y: node.y,
+                x: x + 1,
+                y,
                 direction: Direction::South,
-                consecutive,
+                consecutive: nc,
+                g_score: None,
             });
         }
     }
-    if node.y < cols - 1 && node.direction != Direction::West {
-        let consecutive = get_consecutive(node, Direction::East);
-        if consecutive >= 0 {
+    if y < cols - 1 && direction != Direction::West {
+        let nc = get_next_consecutive(direction, consecutive, Direction::East);
+        if nc >= 0 {
             ans.push(Node {
-                x: node.x,
-                y: node.y + 1,
+                x,
+                y: y + 1,
                 direction: Direction::East,
-                consecutive,
+                consecutive: nc,
+                g_score: None,
             });
         }
     }
     ans
 }
 
-fn get_consecutive(node: &Node, direction: Direction) -> i8 {
-    if node.direction == direction {
+fn get_next_consecutive(direction: Direction, consecutive: i32, next_direction: Direction) -> i32 {
+    if direction == next_direction {
         // zero-indexed
-        if node.consecutive == 2 {
+        if consecutive == 2 {
             return -1;
         } else {
-            return node.consecutive + 1;
+            return consecutive + 1;
         }
     }
     0
@@ -130,16 +142,12 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
         y: start.y,
         direction: Direction::East,
         consecutive: 0,
+        g_score: Some(0),
     };
     let start_f_score = h(&grid[start.x][start.y], &goal);
     open_nodes.push(Reverse((start_f_score, start_node)));
 
-    let mut came_from = HashMap::new();
     let mut neighbor_nodes = HashMap::new();
-
-    // tracks heat loss
-    let mut g_scores = HashMap::new();
-    g_scores.insert(start_node, 0);
 
     // walk across map
     while !open_nodes.is_empty() {
@@ -148,20 +156,21 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
 
         if curr.x == goal.x && curr.y == goal.y {
             // reached the goal
-            return *g_scores.get(&curr).unwrap();
+            return curr.g_score.unwrap();
         }
 
         // visit neighbors
         let neighbors = neighbor_nodes
-            .entry(curr)
-            .or_insert_with(|| get_neighbors(&curr, rows, cols));
+            .entry((curr.x, curr.y, curr.direction, curr.consecutive))
+            .or_insert_with(|| {
+                get_neighbors(curr.x, curr.y, curr.direction, curr.consecutive, rows, cols)
+            });
         for n in neighbors {
-            let tmp_g_score = g_scores[&curr] + d(&grid[n.x][n.y]);
-            let g_score_neighbor = g_scores.get(n).unwrap_or(&i32::MAX);
-            if tmp_g_score < *g_score_neighbor {
+            let tmp_g_score = curr.g_score.unwrap() + d(&grid[n.x][n.y]);
+            let g_score_neighbor = n.g_score.unwrap_or(i32::MAX);
+            if tmp_g_score < g_score_neighbor {
                 // found better path
-                came_from.insert(*n, curr);
-                g_scores.insert(*n, tmp_g_score);
+                n.g_score = Some(tmp_g_score);
                 open_nodes.push(Reverse((tmp_g_score + h(&grid[n.x][n.y], &goal), *n)));
             }
         }
