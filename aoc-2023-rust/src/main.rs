@@ -108,6 +108,9 @@ mod aoc {
             // day 16
             ("16_01", "16_01_01", "day16-input-test"),
             ("16_01", "16_01_02", "day16-input"),
+            // day 17
+            ("17_01", "17_01_01", "day17-input-test"),
+            ("17_01", "17_01_02", "day17-input"),
         ];
 
         for (cmd, solutions_key, resource) in tests {
