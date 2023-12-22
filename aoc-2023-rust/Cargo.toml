@@ -7,4 +7,5 @@ build = "build.rs"
 [dependencies]
 assert_cmd = "2.0.12"
 clap = { version = "4.4.11", features = ["derive"] }
+num-complex = "0.4.4"
 regex = "1.10.2"
