@@ -2,4 +2,4 @@
 DAY="$1"
 PART="$2"
 PUZZLE="$DAY"_"$PART"
-cargo run --bin "$PUZZLE" < ./resources/day$DAY-input
+cargo run --bin "$PUZZLE" < ./resources/$DAY.txt
