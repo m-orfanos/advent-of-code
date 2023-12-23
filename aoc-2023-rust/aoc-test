@@ -3,11 +3,11 @@ DAY="$1"
 PART="$2"
 PUZZLE="$DAY"_"$PART"
 
-FILE_INPUT="./resources/day$DAY-input-test"
+FILE_INPUT="./resources/$DAY-ex.txt"
 
 if [[ "$PUZZLE" == "08_02" ]]
 then
-    FILE_INPUT="./resources/day$DAY-input-test2"
+    FILE_INPUT="./resources/$DAY-ex.txt"
 fi
 
 cargo run --bin "$PUZZLE" < $FILE_INPUT
