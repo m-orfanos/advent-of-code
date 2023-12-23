@@ -15,6 +15,8 @@ struct Tile {
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 struct Node {
     xy: Complex<i32>,
+    x: usize,
+    y: usize,
     direction: Complex<i32>,
     consecutive: i32,
     g_score: Option<i32>,
@@ -56,7 +58,7 @@ fn main() {
 
 fn h(neighbor: &Tile, goal: &Tile) -> i32 {
     // manhattan distance
-    neighbor.x.abs_diff(goal.x) as i32 + neighbor.y.abs_diff(goal.y) as i32
+    (neighbor.x.abs_diff(goal.x) + neighbor.y.abs_diff(goal.y)) as i32
 }
 
 fn d(neighbor: &Tile) -> i32 {
@@ -81,6 +83,8 @@ fn get_neighbors(
         if 0 <= p.re && p.re < rows && 0 <= p.im && p.im < cols {
             v.push(Node {
                 xy: p,
+                x: p.re as usize,
+                y: p.im as usize,
                 direction: d,
                 consecutive: c,
                 g_score: None,
@@ -134,10 +138,12 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
             re: start.x as i32,
             im: start.y as i32,
         },
+        x: start.x,
+        y: start.y,
         direction: Complex { re: 1, im: 0 },
         consecutive: 0,
         g_score: Some(0),
-        f_score: h(&grid[start.x as usize][start.y as usize], &goal),
+        f_score: h(&grid[start.x][start.y], &goal),
     };
 
     let mut open_nodes = BinaryHeap::with_capacity(1e6 as usize);
@@ -148,7 +154,7 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
         // retrieve node with the lowest f-score
         let Reverse(curr) = open_nodes.pop().unwrap();
 
-        if curr.xy.re == goal.x as i32 && curr.xy.im == goal.y as i32 {
+        if curr.x == goal.x && curr.y == goal.y {
             // reached the goal
             return curr.g_score.unwrap();
         }
@@ -162,12 +168,12 @@ fn a_star(grid: &Vec<Vec<Tile>>, start: &Tile, goal: &Tile) -> i32 {
                 get_neighbors(curr.xy, curr.direction, curr.consecutive, rows, cols)
             });
         for n in neighbors {
-            let tmp_g_score = curr.g_score.unwrap() + d(&grid[n.xy.re as usize][n.xy.im as usize]);
+            let tmp_g_score = curr.g_score.unwrap() + d(&grid[n.x][n.y]);
             let g_score_neighbor = n.g_score.unwrap_or(i32::MAX);
             if tmp_g_score < g_score_neighbor {
                 // found better path
                 n.g_score = Some(tmp_g_score);
-                n.f_score = tmp_g_score + h(&grid[n.xy.re as usize][n.xy.im as usize], &goal);
+                n.f_score = tmp_g_score + h(&grid[n.x][n.y], &goal);
                 open_nodes.push(Reverse(*n));
             }
         }
