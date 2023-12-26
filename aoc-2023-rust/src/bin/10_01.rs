@@ -15,8 +15,6 @@ fn main() {
         map.push(line.trim().to_string());
     }
 
-    // println!("Starting position: ({},{})", start_x, start_y);
-
     // There are only 2 valid starting states, but
     // it's impossible to know without checking.
     // Instead take a "walk" in any of the 4
@@ -55,10 +53,7 @@ fn main() {
 
     let mut ans = 0;
     for state in starting_states {
-        // println!("Start: {:?}", state);
         let path = walk(state, &map);
-        // println!("NB Steps: {}", path.len());
-        // println!("");
         ans = ans.max(path.len());
     }
 

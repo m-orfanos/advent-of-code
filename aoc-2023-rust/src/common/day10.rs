@@ -59,111 +59,70 @@ fn as_pipe(ch: char) -> Option<Pipe> {
 }
 
 fn next_state(state: &State, pipe: &Pipe) -> Option<State> {
-    let ans = match (state.direction, pipe) {
+    let dir = match (state.direction, pipe) {
         // NORTH
-        (Direction::North, Pipe::Vertical) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x,
-                y: state.coordinates.y - 1,
-            },
-            direction: Direction::North,
-        }),
+        (Direction::North, Pipe::Vertical) => Some(Direction::North),
         (Direction::North, Pipe::Horizontal) => None,
         (Direction::North, Pipe::BendL) => None,
         (Direction::North, Pipe::BendJ) => None,
-        (Direction::North, Pipe::Bend7) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x - 1,
-                y: state.coordinates.y,
-            },
-            direction: Direction::West,
-        }),
-        (Direction::North, Pipe::BendF) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x + 1,
-                y: state.coordinates.y,
-            },
-            direction: Direction::East,
-        }),
+        (Direction::North, Pipe::Bend7) => Some(Direction::West),
+        (Direction::North, Pipe::BendF) => Some(Direction::East),
         // EAST
         (Direction::East, Pipe::Vertical) => None,
-        (Direction::East, Pipe::Horizontal) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x + 1,
-                y: state.coordinates.y,
-            },
-            direction: Direction::East,
-        }),
+        (Direction::East, Pipe::Horizontal) => Some(Direction::East),
         (Direction::East, Pipe::BendL) => None,
-        (Direction::East, Pipe::BendJ) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x,
-                y: state.coordinates.y - 1,
-            },
-            direction: Direction::North,
-        }),
-        (Direction::East, Pipe::Bend7) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x,
-                y: state.coordinates.y + 1,
-            },
-            direction: Direction::South,
-        }),
+        (Direction::East, Pipe::BendJ) => Some(Direction::North),
+        (Direction::East, Pipe::Bend7) => Some(Direction::South),
         (Direction::East, Pipe::BendF) => None,
         // SOUTH
-        (Direction::South, Pipe::Vertical) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x,
-                y: state.coordinates.y + 1,
-            },
-            direction: Direction::South,
-        }),
+        (Direction::South, Pipe::Vertical) => Some(Direction::South),
         (Direction::South, Pipe::Horizontal) => None,
-        (Direction::South, Pipe::BendL) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x + 1,
-                y: state.coordinates.y,
-            },
-            direction: Direction::East,
-        }),
-        (Direction::South, Pipe::BendJ) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x - 1,
-                y: state.coordinates.y,
-            },
-            direction: Direction::West,
-        }),
+        (Direction::South, Pipe::BendL) => Some(Direction::East),
+        (Direction::South, Pipe::BendJ) => Some(Direction::West),
         (Direction::South, Pipe::Bend7) => None,
         (Direction::South, Pipe::BendF) => None,
         // WEST
         (Direction::West, Pipe::Vertical) => None,
-        (Direction::West, Pipe::Horizontal) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x - 1,
-                y: state.coordinates.y,
-            },
-            direction: Direction::West,
-        }),
-        (Direction::West, Pipe::BendL) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x,
-                y: state.coordinates.y - 1,
-            },
-            direction: Direction::North,
-        }),
+        (Direction::West, Pipe::Horizontal) => Some(Direction::West),
+        (Direction::West, Pipe::BendL) => Some(Direction::North),
         (Direction::West, Pipe::BendJ) => None,
         (Direction::West, Pipe::Bend7) => None,
-        (Direction::West, Pipe::BendF) => Some(State {
-            coordinates: Coordinates {
-                x: state.coordinates.x,
-                y: state.coordinates.y + 1,
-            },
-            direction: Direction::South,
-        }),
+        (Direction::West, Pipe::BendF) => Some(Direction::South),
     };
 
-    // println!("{:?}", ans);
-    ans
+    match dir {
+        Some(d) => match d {
+            Direction::North => Some(State {
+                coordinates: Coordinates {
+                    x: state.coordinates.x,
+                    y: state.coordinates.y - 1,
+                },
+                direction: Direction::North,
+            }),
+            Direction::East => Some(State {
+                coordinates: Coordinates {
+                    x: state.coordinates.x + 1,
+                    y: state.coordinates.y,
+                },
+                direction: Direction::East,
+            }),
+            Direction::South => Some(State {
+                coordinates: Coordinates {
+                    x: state.coordinates.x,
+                    y: state.coordinates.y + 1,
+                },
+                direction: Direction::South,
+            }),
+            Direction::West => Some(State {
+                coordinates: Coordinates {
+                    x: state.coordinates.x - 1,
+                    y: state.coordinates.y,
+                },
+                direction: Direction::West,
+            }),
+        },
+        None => None,
+    }
 }
 
 fn get_next(map: &Vec<String>, state: &State) -> Option<State> {
