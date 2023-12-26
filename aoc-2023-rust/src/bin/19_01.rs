@@ -1,17 +1,18 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     io::{self, BufRead},
 };
 
 use regex::Regex;
 
 fn main() {
+    // parse input
     let input_regex = Regex::new(r"(.*)\{(.[<>]\d+:.+),(.*)\}").unwrap();
     let rules_regex = Regex::new(r"(.*)([<>])(.*):(.*)").unwrap();
     let parts_regex = Regex::new(r"\{x=(.*),m=(.*),a=(.*),s=(.*)\}").unwrap();
 
-    let mut workflows = HashMap::new();
-    let mut parts = HashMap::new();
+    let mut workflows = BTreeMap::new();
+    let mut parts = vec![];
 
     let mut section = 0;
     for input in io::stdin().lock().lines() {
@@ -27,26 +28,42 @@ fn main() {
             workflows.insert(workflow.0, (workflow.1, workflow.2));
         } else {
             let part = parse_part(line, &parts_regex);
-            parts.insert(part["x"], part);
+            parts.push(part);
         }
     }
 
-    println!("Workflows");
-    for w in workflows {
-        println!("{:?}", w);
-    }
+    // solve problem
+    let mut ans: u32 = 0;
+    for part in &parts {
+        let mut curr = "in";
+        while workflows.contains_key(curr) {
+            let (rules, default_next) = workflows.get(curr).unwrap();
+            let mut is_found = false;
+            for (part_name, op, cnt, next) in rules {
+                let pnb = part.get(part_name).unwrap();
+                if (op == "<" && pnb < cnt) || (op == ">" && pnb > cnt) {
+                    curr = next;
+                    is_found = true;
+                    break;
+                }
+            }
+            if !is_found {
+                curr = default_next;
+            }
+        }
 
-    println!("Parts");
-    for p in parts {
-        println!("{:?}", p);
+        if curr == "A" {
+            ans += part.values().sum::<u32>();
+        }
     }
+    println!("{}", ans);
 }
 
-fn parse_part(line: String, parts_regex: &Regex) -> HashMap<&str, i32> {
+fn parse_part(line: String, parts_regex: &Regex) -> BTreeMap<String, u32> {
     let cap_parts = parts_regex.captures(&line).unwrap();
 
-    fn parse_part(cap_parts: &regex::Captures<'_>, i: usize) -> i32 {
-        let x: i32 = cap_parts
+    fn parse_part(cap_parts: &regex::Captures<'_>, i: usize) -> u32 {
+        let x: u32 = cap_parts
             .get(i)
             .unwrap()
             .as_str()
@@ -56,11 +73,11 @@ fn parse_part(line: String, parts_regex: &Regex) -> HashMap<&str, i32> {
         x
     }
 
-    HashMap::from([
-        ("x", parse_part(&cap_parts, 1)),
-        ("m", parse_part(&cap_parts, 2)),
-        ("a", parse_part(&cap_parts, 3)),
-        ("s", parse_part(&cap_parts, 4)),
+    BTreeMap::from([
+        ("x".to_string(), parse_part(&cap_parts, 1)),
+        ("m".to_string(), parse_part(&cap_parts, 2)),
+        ("a".to_string(), parse_part(&cap_parts, 3)),
+        ("s".to_string(), parse_part(&cap_parts, 4)),
     ])
 }
 
