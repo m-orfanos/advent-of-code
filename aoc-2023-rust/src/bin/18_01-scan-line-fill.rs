@@ -5,33 +5,50 @@ use std::{
 
 use num_complex::Complex;
 
-fn main() {
-    let (_, y_min, _, y_max, mut grid, _, mut edges) = parse_input();
+struct Vertex {
+    x: i32,
+    y: i32,
+}
 
-    // scan-line fill algorithm
+struct Edge {
+    v1: Vertex,
+    v2: Vertex,
+    y_min: i32,
+}
+
+// scan-line fill approach
+// https://en.wikipedia.org/wiki/Flood_fill#Span_filling
+// https://www.educative.io/answers/what-is-scanline-fill-algorithm
+// https://gist.github.com/esmitt/17d36f23c6e98f0b1fa5bda06490d9c4
+fn main() {
+    let (y_min, y_max, mut grid, mut edges) = parse_input();
+
     let mut actives_edges = vec![];
+
     for y in y_min..y_max + 1 {
-        while !edges.is_empty() && edges.last().unwrap().0 == y {
+        // important! edges is reverse sorted (desc) by ymin
+        while !edges.is_empty() && edges.last().unwrap().y_min == y {
             actives_edges.push(edges.pop().unwrap());
         }
 
-        actives_edges.sort_by(|a, b| a.1.cmp(&b.1)); // x of y_min
+        // now sort active edges by x of ymin (first vertex)
+        actives_edges.sort_by(|a, b| a.v1.x.cmp(&b.v1.x));
 
         // create list of x-coords to be filled
         // must determine all the various edge cases
         let mut xs = vec![];
         for ae in &actives_edges {
-            if y == ae.4 {
+            if y == ae.v2.y {
                 // intersects vertex with ymax
-                xs.push(ae.1);
+                xs.push(ae.v1.x);
             }
-            if y == ae.2 && y == ae.4 {
+            if y == ae.v1.y && y == ae.v2.y {
                 // horizontal edge, add it again
-                xs.push(ae.1);
+                xs.push(ae.v1.x);
             }
-            if y > ae.2 && y < ae.4 {
+            if y > ae.v1.y && y < ae.v2.y {
                 // intersects edge
-                xs.push(ae.1);
+                xs.push(ae.v1.x);
             }
         }
         xs.sort();
@@ -49,16 +66,19 @@ fn main() {
         // prep for next scan-line
         while !actives_edges.is_empty() {
             let e = actives_edges.pop().unwrap();
-            if y == e.4 {
-                // reached y_max
+            if y == e.v2.y {
+                // reached y_max, drop it going forward
                 continue;
             }
-            edges.push((e.0 + 1, e.1, e.2, e.3, e.4, e.5, e.6));
+            edges.push(Edge {
+                v1: e.v1,
+                v2: e.v2,
+                y_min: e.y_min + 1,
+            });
         }
     }
 
-    // display_grid(x_min, x_max, y_min, y_max, &grid);
-
+    // count number of trenches
     let mut ans = 0;
     for (_, ys) in grid {
         ans += ys.len();
@@ -66,42 +86,9 @@ fn main() {
     println!("{}", ans);
 }
 
-// fn display_grid(
-//     x_min: i32,
-//     x_max: i32,
-//     y_min: i32,
-//     y_max: i32,
-//     grid: &HashMap<i32, HashMap<i32, String>>,
-// ) {
-//     for y in (y_min..y_max + 1).rev() {
-//         print!("{:<4} ", y);
-//         for x in x_min..x_max + 1 {
-//             if grid.get(&x).and_then(|r| r.get(&y)).is_some() {
-//                 if x == 0 && y == 0 {
-//                     print!("S");
-//                 } else {
-//                     print!("#");
-//                 }
-//             } else {
-//                 print!(".");
-//             }
-//         }
-//         println!("");
-//     }
-//     println!("");
-// }
-
-fn parse_input() -> (
-    i32,
-    i32,
-    i32,
-    i32,
-    HashMap<i32, HashMap<i32, String>>,
-    Vec<(i32, i32)>,
-    Vec<(i32, i32, i32, i32, i32, f32, f32)>,
-) {
+fn parse_input() -> (i32, i32, HashMap<i32, HashMap<i32, String>>, Vec<Edge>) {
     let mut grid: HashMap<i32, HashMap<i32, String>> = HashMap::new();
-    let mut vertices = vec![];
+    // let mut vertices = vec![];
     let mut edges = vec![];
 
     let mut x_max = 0;
@@ -132,7 +119,7 @@ fn parse_input() -> (
             m.insert(0, color.to_string());
             grid.insert(0, m);
 
-            vertices.push((0, 0));
+            // vertices.push(Vertex { x: 0, y: 0 });
         }
 
         let start = curr;
@@ -151,34 +138,38 @@ fn parse_input() -> (
             nb_steps -= 1;
         }
 
-        let x_ymin;
-        let y_min;
-        let x_ymax;
-        let y_max;
+        let v1;
+        let v2;
         if start.im < curr.im {
-            x_ymin = start.re;
-            y_min = start.im;
-
-            x_ymax = curr.re;
-            y_max = curr.im;
+            v1 = Vertex {
+                x: start.re,
+                y: start.im,
+            };
+            v2 = Vertex {
+                x: curr.re,
+                y: curr.im,
+            };
         } else {
-            x_ymin = curr.re;
-            y_min = curr.im;
-
-            x_ymax = start.re;
-            y_max = start.im;
+            v1 = Vertex {
+                x: curr.re,
+                y: curr.im,
+            };
+            v2 = Vertex {
+                x: start.re,
+                y: start.im,
+            };
         }
 
-        let dir = curr - start;
-        let slope = dir.im as f32 / dir.re as f32;
-        let inv_slope = dir.re as f32 / dir.im as f32;
-
-        vertices.push((curr.re, curr.im));
-        edges.push((y_min, x_ymin, y_min, x_ymax, y_max, slope, inv_slope));
+        // vertices.push(Vertex {
+        //     x: curr.re,
+        //     y: curr.im,
+        // });
+        edges.push(Edge { v1, v2, y_min });
     }
 
-    vertices.pop();
-    edges.sort_by(|a, b| b.0.cmp(&a.0));
+    // the last vertex is the same as the start, remove it
+    // vertices.pop();
+    edges.sort_by(|a, b| b.y_min.cmp(&a.y_min));
 
-    (x_min, y_min, x_max, y_max, grid, vertices, edges)
+    (y_min, y_max, grid, edges)
 }
