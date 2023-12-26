@@ -71,4 +71,3 @@ fn main() {
     let ans = area + perimeter / 2 + 1;
     println!("{}", ans);
 }
-
