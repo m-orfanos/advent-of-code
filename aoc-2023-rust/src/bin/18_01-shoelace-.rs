@@ -2,6 +2,8 @@ use std::io::{self, BufRead};
 
 use num_complex::Complex;
 
+// I tried using a scanline fill algorithm but couldn't figure out the various edge cases
+// TODO solve this problem using a flood-fill (BFS?) approach
 fn main() {
     let mut vertices = vec![];
     vertices.push((0, 0));
