@@ -25,7 +25,10 @@ A bash utlity script is used to run the solutions, it takes the day and day-part
 ```shell
 $ cd /path/to/repo/aoc-2023-rust
 $ ./aoc <DAY> <PART>
-````
+```
+
+> [!warning]
+> AoC devs have requested puzzle inputs be excluded from git repos so I had to nuke them using `git-filter-repo`. The scripts assume inputs are stored in a `resources` directory. See the scripts for naming scheme.
 
 > [!warning]
 > The `<DAY>` is TWO digits 01, 02, ..., 25
