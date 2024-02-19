@@ -1,0 +1,5 @@
+#!/bin/bash
+DAY="$1"
+PART="$2"
+PUZZLE="$DAY"_"$PART"
+cargo run --bin "$PUZZLE" < ./resources/$DAY.txt
