@@ -14,7 +14,7 @@ Clone the repository and build the CLI app.
 
 ```shell
 git clone
-cd advent-of-code/aoc-2023-rust
+cd advent-of-code/2023-rust
 cargo build --release
 ```
 
@@ -25,7 +25,7 @@ A bash utlity script is used to run the solutions, it takes the day and day-part
 ```shell
 # The `<DAY>` is TWO digits 01, 02, ..., 25
 # The `<PART>` is TWO digits 01 or 02
-cd /path/to/repo/aoc-2023-rust
+cd /path/to/repo/2023-rust
 ./aoc <DAY> <PART>
 ```
 
