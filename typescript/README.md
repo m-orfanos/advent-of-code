@@ -31,7 +31,7 @@ Usage: aoc [OPTIONS...]
 
 Optional flags:
   -h, --help       Display this help and exit
-  -y, --year       The year (2024) to solve
+  -y, --year       The year (2023-2024) to solve
   -d, --day        The puzzle day (01-25) to solve
   -p, --part       The puzzle part (01, 02) to solve
 ```
