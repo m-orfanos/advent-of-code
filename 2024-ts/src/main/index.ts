@@ -30,32 +30,26 @@ async function main(inputArgs: string[]): Promise<void> {
 
   console.log(`Solving AoC 2024 Day:${dayStr} Part:${partStr}` + (example ? " example" : ""));
 
-  // dynamic code import
-  const puzzle = await import(`./${dayStr}_${partStr}.ts`);
-
   // puzzle input
   const pfx = `${dayStr}_${partStr}`;
   const sfx = example ? "_example" : "";
   const input_filename = `./src/resources/${pfx}${sfx}.txt`;
-
-  // cache puzzle input
   const isFileExists = await exists(input_filename);
-  if (!isFileExists) {
+  if (!isFileExists && !example) {
     const content = await fetchPuzzleInput(year, day);
     await Deno.writeTextFile(input_filename, content);
   }
+  const input = await Deno.readTextFile(input_filename);
   console.log("Puzzle input is cached.");
 
-  // read cached puzzle input
-  const input = await Deno.readTextFile(input_filename);
-
   // solve puzzle
+  const puzzle = await import(`./${dayStr}_${partStr}.ts`);
   const solution = puzzle.solve(input);
-  console.log(solution);
+  console.log(`Answer: ${solution}`);
 }
 
 async function fetchPuzzleInput(year: number, day: number): Promise<string> {
-  console.log("Fetching puzzle input from");
+  console.log("Fetching puzzle input");
   const resp = await fetch(`https://adventofcode.com/${year}/day/${day}/input`, {
     headers: { cookie: `session=${Deno.env.get("AOC_SESSION")}` },
   });
