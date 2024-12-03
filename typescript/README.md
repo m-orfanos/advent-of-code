@@ -18,7 +18,7 @@ Run via command line using the helper script
 
 ```shell
 cd /path/to/project
-./aoc.sh -d 01 -p 01
+./aoc.sh -y 2024 -d 01 -p 01
 ```
 
 The script will download the puzzle input from the AoC
@@ -31,6 +31,7 @@ Usage: aoc [OPTIONS...]
 
 Optional flags:
   -h, --help       Display this help and exit
+  -y, --year       The year (2024) to solve
   -d, --day        The puzzle day (01-25) to solve
   -p, --part       The puzzle part (01, 02) to solve
 ```

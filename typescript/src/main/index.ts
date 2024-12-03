@@ -13,8 +13,7 @@ async function main(inputArgs: string[]): Promise<void> {
     Deno.exit(0);
   }
 
-  // TODO: remove hardcoded year someday maybe
-  const year = 2024;
+  const year = Number.parseInt(args.year, 10);
   const day = Number.parseInt(args.day, 10);
   const dayStr = (day + "").padStart(2, "0");
   const part: number = Number.parseInt(args.part, 10);
@@ -23,17 +22,17 @@ async function main(inputArgs: string[]): Promise<void> {
   const example: boolean = args.example;
 
   // validate args
-  if (!day || !part) {
+  if (!year || !day || !part) {
     printHelp();
     Deno.exit(0);
   }
 
-  console.log(`Solving AoC 2024 Day:${dayStr} Part:${partStr}` + (example ? " example" : ""));
+  console.log(`Solving AoC ${year} Day:${dayStr} Part:${partStr}` + (example ? " example" : ""));
 
   // puzzle input
   const pfx = `${dayStr}_${partStr}`;
   const sfx = example ? "_example" : "";
-  const input_filename = `./src/resources/${pfx}${sfx}.txt`;
+  const input_filename = `./src/resources/${year}/${pfx}${sfx}.txt`;
   const isFileExists = await exists(input_filename);
   if (!isFileExists && !example) {
     const content = await fetchPuzzleInput(year, day);
@@ -43,7 +42,7 @@ async function main(inputArgs: string[]): Promise<void> {
   console.log("Puzzle input is cached.");
 
   // solve puzzle
-  const puzzle = await import(`./${dayStr}_${partStr}.ts`);
+  const puzzle = await import(`./${year}/${dayStr}_${partStr}.ts`);
   const solution = puzzle.solve(input);
   console.log(`Answer: ${solution}`);
 }
@@ -67,7 +66,7 @@ function parseArguments(args: string[]): Args {
   ];
 
   const stringArgs: string[] = [
-    // "year",
+    "year",
     "day",
     "part",
   ];
@@ -75,7 +74,7 @@ function parseArguments(args: string[]): Args {
   const alias = {
     "help": "h",
     "example": "e",
-    // "year": "y",
+    "year": "y",
     "day": "d",
     "part": "p",
   };
@@ -91,6 +90,7 @@ function printHelp(): void {
   console.log(`Usage: aoc [OPTIONS...]`);
   console.log("\nOptional flags:");
   console.log("  -h, --help       Display this help and exit");
+  console.log("  -y, --year       The year (2024) to solve");
   console.log("  -d, --day        The puzzle day (01-25) to solve");
   console.log("  -p, --part       The puzzle part (01, 02) to solve");
 }
