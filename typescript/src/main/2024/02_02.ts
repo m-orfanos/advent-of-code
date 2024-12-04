@@ -1,5 +1,5 @@
 import { isSafeReport } from "./02_01.ts";
-import { convertTo2DArray } from "./utils.ts";
+import { convertTo2DArray } from "../utils/convertTo2DArray.ts";
 
 export function solve(input: string): number {
   let cnt = 0;

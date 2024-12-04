@@ -1,4 +1,4 @@
-import { kmpSearch } from "../utils.ts";
+import { kmpSearch } from "../utils/kmpSearch.ts";
 
 export function solve(input: string): number {
   const space: [string, number][] = [

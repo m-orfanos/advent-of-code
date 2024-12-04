@@ -1,4 +1,4 @@
-import { convertTo2DArray } from "./utils.ts";
+import { convertTo2DArray } from "../utils/convertTo2DArray.ts";
 
 export function solve(input: string): number {
   const grid: number[][] = convertTo2DArray(input);
