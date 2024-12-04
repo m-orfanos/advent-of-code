@@ -1,7 +1,7 @@
-import { convertTo2DArray } from "../utils/convertTo2DArray.ts";
+import { convertTo2DArrayNumeric } from "../utils/convertTo2DArray.ts";
 
 export function solve(input: string): number {
-  const grid: number[][] = convertTo2DArray(input);
+  const grid: number[][] = convertTo2DArrayNumeric(input);
   return grid.reduce((acc, curr) => acc + (isSafeReport(curr) ? 1 : 0), 0);
 }
 

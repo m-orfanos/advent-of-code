@@ -1,9 +1,9 @@
 import { isSafeReport } from "./02_01.ts";
-import { convertTo2DArray } from "../utils/convertTo2DArray.ts";
+import { convertTo2DArrayNumeric } from "../utils/convertTo2DArray.ts";
 
 export function solve(input: string): number {
   let cnt = 0;
-  const grid: number[][] = convertTo2DArray(input);
+  const grid: number[][] = convertTo2DArrayNumeric(input);
   for (let i = 0; i < grid.length; i++) {
     const safe = isSafeReport(grid[i]);
     if (safe) {
