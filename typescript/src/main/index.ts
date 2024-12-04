@@ -27,8 +27,6 @@ async function main(inputArgs: string[]): Promise<void> {
     Deno.exit(0);
   }
 
-  console.log(`Solving AoC ${year} Day:${dayStr} Part:${partStr}` + (example ? " example" : ""));
-
   // puzzle input
   const pfx = `${dayStr}_${partStr}`;
   const sfx = example ? "_example" : "";
@@ -39,16 +37,14 @@ async function main(inputArgs: string[]): Promise<void> {
     await Deno.writeTextFile(input_filename, content);
   }
   const input = await Deno.readTextFile(input_filename);
-  console.log("Puzzle input is cached.");
 
   // solve puzzle
   const puzzle = await import(`./${year}/${dayStr}_${partStr}.ts`);
   const solution = puzzle.solve(input);
-  console.log(`Answer: ${solution}`);
+  console.log(`${solution}`);
 }
 
 async function fetchPuzzleInput(year: number, day: number): Promise<string> {
-  console.log("Fetching puzzle input");
   const resp = await fetch(`https://adventofcode.com/${year}/day/${day}/input`, {
     headers: { cookie: `session=${Deno.env.get("AOC_SESSION")}` },
   });
