@@ -7,7 +7,7 @@ export function solve(input: string): number {
   const grid = convertTo2DArrayString(input);
 
   // sliding window approach
-  // for each letter (i,j) along the grid
+  // for each letter (i,j) in the grid
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
       // build a word along each ordinal direction
