@@ -1,3 +1,5 @@
+import { kmpSearch } from "../utils.ts";
+
 export function solve(input: string): number {
   const space: [string, number][] = [
     ["0", 0],
@@ -25,23 +27,26 @@ export function solve(input: string): number {
   let calibration = 0;
   const rows = input.trim().split("\n");
   for (const row of rows) {
-    let ilhs = row.length;
-    let vlhs = 0;
+    let ilhs = row.length - 1;
+    let vlhs = NaN;
 
     let irhs = 0;
-    let vrhs = 0;
+    let vrhs = NaN;
 
     for (const [needle, value] of space) {
-      const first = row.slice(0, ilhs + 1).indexOf(needle);
-      if (first >= 0) {
-        ilhs = first;
-        vlhs = value;
-      }
+      const matches = kmpSearch(row, needle);
+      if (matches.length > 0) {
+        const first = matches[0];
+        if (first <= ilhs) {
+          ilhs = first;
+          vlhs = value;
+        }
 
-      const last = row.slice(irhs).lastIndexOf(needle);
-      if (last >= 0) {
-        irhs = irhs + last;
-        vrhs = value;
+        const last = matches[matches.length - 1];
+        if (last >= irhs) {
+          irhs = last;
+          vrhs = value;
+        }
       }
     }
 
