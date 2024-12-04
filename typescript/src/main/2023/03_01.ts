@@ -43,7 +43,7 @@ function parseSymbols(input: string): [number, number, string][] {
   return symbols;
 }
 
-function parseNums(input: string): [number, number, number, number][] {
+export function parseNums(input: string): [number, number, number, number][] {
   const nx: [number, number, number, number][] = [];
   const rows = input.trim().split("\n");
   for (let i = 0; i < rows.length; i++) {
