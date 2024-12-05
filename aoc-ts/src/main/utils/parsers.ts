@@ -8,7 +8,7 @@
  * @param input
  * @returns
  */
-export function convertTo2DArrayNumeric(input: string): number[][] {
+export function to2DArrayNumeric(input: string): number[][] {
   const grid: number[][] = [];
 
   const rows = input.trim().split("\n");
@@ -37,7 +37,7 @@ export function convertTo2DArrayNumeric(input: string): number[][] {
  * @param input
  * @returns
  */
-export function convertTo2DArrayString(input: string): string[] {
+export function toArrayString(input: string): string[] {
   const grid: string[] = [];
   const rows = input.trim().split("\n");
   for (const row of rows) {
@@ -51,4 +51,19 @@ export function convertTo2DArrayString(input: string): string[] {
   }
 
   return grid;
+}
+
+/**
+ * Converts a string into an array of numbers.
+ *
+ * Example
+ *   Input : "83 86  6 31 17  9 48 53"
+ *   Output: [83, 86, 6, 31, 17, 9, 48, 53]
+ */
+export function toArrayNumeric(str: string): number[] {
+  return str.trim()
+    .split(" ")
+    .map((x) => x.trim())
+    .filter((x) => x.length > 0)
+    .map((x) => Number.parseInt(x, 10));
 }

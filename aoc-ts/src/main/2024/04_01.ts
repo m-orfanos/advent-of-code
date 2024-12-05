@@ -1,10 +1,10 @@
 import { Direction, Point } from "../utils/compass.ts";
-import { convertTo2DArrayString } from "../utils/convertTo2DArray.ts";
+import { toArrayString } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
   const pattern = "XMAS";
   let cnt = 0;
-  const grid = convertTo2DArrayString(input);
+  const grid = toArrayString(input);
 
   // sliding window approach
   // for each letter (i,j) in the grid
