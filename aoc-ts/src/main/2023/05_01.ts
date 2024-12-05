@@ -1,12 +1,12 @@
 import { toArrayNumeric } from "../utils/parsers.ts";
 
-const SEED_TO_SOIL = "seed-to-soil";
-const SOIL_TO_FERTILIZER = "soil-to-fertilizer";
-const FERTILIZER_TO_WATER = "fertilizer-to-water";
-const WATER_TO_LIGHT = "water-to-light";
-const LIGHT_TO_TEMPERATURE = "light-to-temperature";
-const TEMPERATURE_TO_HUMIDITY = "temperature-to-humidity";
-const HUMIDITY_TO_LOCATION = "humidity-to-location";
+export const SEED_TO_SOIL = "seed-to-soil";
+export const SOIL_TO_FERTILIZER = "soil-to-fertilizer";
+export const FERTILIZER_TO_WATER = "fertilizer-to-water";
+export const WATER_TO_LIGHT = "water-to-light";
+export const LIGHT_TO_TEMPERATURE = "light-to-temperature";
+export const TEMPERATURE_TO_HUMIDITY = "temperature-to-humidity";
+export const HUMIDITY_TO_LOCATION = "humidity-to-location";
 
 export function solve(input: string): number {
   const rows = input.trim().split("\n");
@@ -39,7 +39,7 @@ function next(n: number, mapping: [number, number, number][]) {
   return m;
 }
 
-function parseMappings(rows: string[]) {
+export function parseMappings(rows: string[]) {
   const map: { [key: string]: [number, number, number][] } = {
     [SEED_TO_SOIL]: [],
     [SOIL_TO_FERTILIZER]: [],
@@ -83,6 +83,25 @@ function parseMappings(rows: string[]) {
         i += 1;
       }
       curr.sort((a, b) => a[1] - b[1]);
+
+      // fill in missing intervals
+      const missing: [number, number, number][] = [];
+      if (curr[0][1] !== 0) {
+        missing.push([0, 0, curr[0][1]]);
+      }
+      let tmp = curr[0][1];
+      for (let j = 0; j < curr.length; j++) {
+        if (tmp < curr[j][1]) {
+          missing.push([tmp, tmp, curr[j][1] - tmp]);
+        }
+        tmp = curr[j][1] + curr[j][2];
+      }
+      missing.push([
+        curr[curr.length - 1][1] + curr[curr.length - 1][2],
+        curr[curr.length - 1][1] + curr[curr.length - 1][2],
+        Infinity,
+      ]);
+      curr.push(...missing);
     }
   }
 
