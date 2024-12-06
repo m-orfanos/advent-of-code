@@ -13,9 +13,9 @@ export function solve(input: string): number {
     i += 1;
   }
 
-  let sum = 0;
-
   // parse updates
+  // fix incorrectly-ordered updates
+  const fixedUpdates = [];
   i += 1;
   while (i < rows.length && rows[i].trim().length !== 0) {
     const deps = new Set<number>();
@@ -35,12 +35,19 @@ export function solve(input: string): number {
       }
     }
 
-    if (isOrdered) {
-      // calculate sum
-      sum += update[Math.floor((update.length - 1) / 2)];
+    if (!isOrdered) {
+      // fix errors
+      update.sort((a, b) => (orders.get(b) || []).indexOf(a));
+      fixedUpdates.push(update);
     }
 
     i += 1;
+  }
+
+  // calculate sum
+  let sum = 0;
+  for (const update of fixedUpdates) {
+    sum += update[Math.floor((update.length - 1) / 2)];
   }
 
   return sum;
