@@ -1,5 +1,5 @@
 import { toArrayNumeric } from "../utils/parsers.ts";
-import { chunk } from "../utils/chunk.ts";
+import { chunk } from "../utils/arrays.ts";
 import {
   FERTILIZER_TO_WATER,
   HUMIDITY_TO_LOCATION,

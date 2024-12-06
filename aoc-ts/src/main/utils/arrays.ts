@@ -9,3 +9,7 @@ export function chunk(xs: number[], n: number): number[][] {
   }
   return chunks;
 }
+
+export function zip<T>(a: T[], b: T[]): T[][] {
+  return a.map((k, i) => [k, b[i]]);
+}
