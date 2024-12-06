@@ -27,6 +27,25 @@ export function to2DArrayNumeric(input: string): number[][] {
   return grid;
 }
 
+export function to2DArrayString(input: string): string[][] {
+  const grid: string[][] = [];
+
+  const rows = input.trim().split("\n");
+  for (const row of rows) {
+    const curr: string[] = [];
+    grid.push(curr);
+    const cols = row.trim().split("");
+    for (const col of cols) {
+      if (col.trim().length == 0) {
+        continue;
+      }
+      curr.push(col.trim());
+    }
+  }
+
+  return grid;
+}
+
 /**
  * Converts the input into an array of strings.
  *
