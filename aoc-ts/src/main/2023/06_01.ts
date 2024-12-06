@@ -18,7 +18,7 @@ export function solve(input: string): number {
   return cnt;
 }
 
-function binarySearch(
+export function binarySearch(
   t: number,
   dst: number,
   cmp: (a: number, b: number) => boolean,
