@@ -1,4 +1,4 @@
-import { toArrayNumeric } from "../utils/parsers.ts";
+import { to1DArrayNumeric } from "../utils/parsers.ts";
 
 export const SEED_TO_SOIL = "seed-to-soil";
 export const SOIL_TO_FERTILIZER = "soil-to-fertilizer";
@@ -10,7 +10,7 @@ export const HUMIDITY_TO_LOCATION = "humidity-to-location";
 
 export function solve(input: string): number {
   const rows = input.trim().split("\n");
-  const seeds = toArrayNumeric(rows[0].split(":")[1]);
+  const seeds = to1DArrayNumeric(rows[0].split(":")[1]);
   const map = parseMappings(rows);
 
   let ans = Infinity;
@@ -79,7 +79,7 @@ export function parseMappings(rows: string[]) {
       i += 1;
     } else {
       while (i < rows.length && rows[i].trim().length !== 0) {
-        curr.push(toArrayNumeric(rows[i]) as [number, number, number]);
+        curr.push(to1DArrayNumeric(rows[i]) as [number, number, number]);
         i += 1;
       }
       curr.sort((a, b) => a[1] - b[1]);

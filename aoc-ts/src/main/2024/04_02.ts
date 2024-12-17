@@ -1,11 +1,11 @@
 import { Direction, Point } from "../utils/compass.ts";
-import { toArrayString } from "../utils/parsers.ts";
+import { to1DArrayString } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
   const pattern1 = "MAS";
   const pattern2 = "SAM";
   let cnt = 0;
-  const grid = toArrayString(input);
+  const grid = to1DArrayString(input);
 
   // sliding window approach
   // for each letter (i,j) in the grid

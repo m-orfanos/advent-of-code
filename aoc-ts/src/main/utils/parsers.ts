@@ -1,88 +1,45 @@
 /**
- * Converts the input into a 2D array of numbers.
- *
- * @remarks
- * The input is assumed to follow a row-major order.
- * The result might be a ragged-array.
- *
- * @param input
- * @returns
+ * Converts a string into an array of numbers.
  */
-export function to2DArrayNumeric(input: string): number[][] {
-  const grid: number[][] = [];
-
-  const rows = input.trim().split("\n");
-  for (const row of rows) {
-    const curr: number[] = [];
-    grid.push(curr);
-    const cols = row.trim().split(" ");
-    for (const col of cols) {
-      if (col.length == 0) {
-        continue;
-      }
-      curr.push(Number.parseInt(col, 10));
-    }
-  }
-
-  return grid;
+export function to1DArrayNumeric(str: string, delimiter = " "): number[] {
+  return str.trim()
+    .split(delimiter)
+    .map((x) => x.trim())
+    .filter((x) => x.length > 0)
+    .map((x) => Number.parseInt(x, 10));
 }
 
-export function to2DArrayString(input: string): string[][] {
-  const grid: string[][] = [];
-
-  const rows = input.trim().split("\n");
-  for (const row of rows) {
-    const curr: string[] = [];
-    grid.push(curr);
-    const cols = row.trim().split("");
-    for (const col of cols) {
-      if (col.trim().length == 0) {
-        continue;
-      }
-      curr.push(col.trim());
-    }
-  }
-
-  return grid;
+/**
+ * Converts the input into a 2D array of numbers.
+ */
+export function to2DArrayNumeric(input: string, delimiter = " "): number[][] {
+  return input.trim()
+    .split("\n")
+    .map((r) =>
+      r.trim()
+        .split(delimiter)
+        .map((c) => c.trim())
+        .map((c) => Number.parseInt(c, 10))
+    );
 }
 
 /**
  * Converts the input into an array of strings.
- *
- * @remarks
- * The input is assumed to follow a row-major order.
- * The result might be a ragged-array.
- *
- * @param input
- * @returns
  */
-export function toArrayString(input: string): string[] {
-  const grid: string[] = [];
-  const rows = input.trim().split("\n");
-  for (const row of rows) {
-    const cols = row.trim().split(" ");
-    for (const col of cols) {
-      if (col.length == 0) {
-        continue;
-      }
-      grid.push(col);
-    }
-  }
-
-  return grid;
+export function to1DArrayString(input: string): string[] {
+  return input.trim()
+    .split("\n")
+    .map((x) => x.trim());
 }
 
 /**
- * Converts a string into an array of numbers.
- *
- * Example
- *   Input : "83 86  6 31 17  9 48 53"
- *   Output: [83, 86, 6, 31, 17, 9, 48, 53]
+ * Converts the input into a 2D array of characters.
  */
-export function toArrayNumeric(str: string): number[] {
-  return str.trim()
-    .split(" ")
-    .map((x) => x.trim())
-    .filter((x) => x.length > 0)
-    .map((x) => Number.parseInt(x, 10));
+export function to2DArrayString(input: string): string[][] {
+  return input.trim()
+    .split("\n")
+    .map((r) =>
+      r.trim()
+        .split("")
+    );
 }

@@ -1,11 +1,11 @@
 import { zip } from "../utils/arrays.ts";
-import { toArrayNumeric } from "../utils/parsers.ts";
+import { to1DArrayNumeric } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
   const rows = input.trim().split("\n");
 
-  const times = toArrayNumeric(rows[0].trim().split(":")[1]);
-  const distances = toArrayNumeric(rows[1].trim().split(":")[1]);
+  const times = to1DArrayNumeric(rows[0].trim().split(":")[1]);
+  const distances = to1DArrayNumeric(rows[1].trim().split(":")[1]);
   const races = zip(times, distances);
 
   let cnt = 1;

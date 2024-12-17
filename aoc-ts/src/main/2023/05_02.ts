@@ -1,4 +1,4 @@
-import { toArrayNumeric } from "../utils/parsers.ts";
+import { to1DArrayNumeric } from "../utils/parsers.ts";
 import { chunk } from "../utils/arrays.ts";
 import {
   FERTILIZER_TO_WATER,
@@ -13,7 +13,7 @@ import {
 
 export function solve(input: string): number {
   const rows = input.trim().split("\n");
-  const seeds = toArrayNumeric(rows[0].split(":")[1]);
+  const seeds = to1DArrayNumeric(rows[0].split(":")[1]);
   const chunks = chunk(seeds, 2) as [number, number][];
   const map = parseMappings(rows);
 
