@@ -41,13 +41,10 @@ export function solve(input: string): number {
     return cache[n][b];
   }
 
-  const stones = to1DArrayNumeric(input);
   const cache: { [key: number]: { [key: number]: number } } = {};
 
-  let cnt = 0;
-  for (let i = 0; i < stones.length; i++) {
-    cnt += count(stones[i], 75);
-  }
-
-  return cnt;
+  const stones = to1DArrayNumeric(input);
+  return stones
+    .map((s) => count(s, 75))
+    .reduce((acc, curr) => acc + curr, 0);
 }
