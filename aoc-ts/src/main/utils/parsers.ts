@@ -43,3 +43,22 @@ export function to2DArrayString(input: string): string[][] {
         .split("")
     );
 }
+
+/**
+ * Converts the input into a map of characters.
+ */
+export function to2DMapString(input: string): [{ [key: string]: string }, number, number] {
+  const grid = to2DArrayString(input);
+  const ans: { [key: string]: string } = {};
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      ans[hash(i, j)] = grid[i][j];
+    }
+  }
+
+  return [ans, grid.length, grid[0].length];
+}
+
+export function hash(i: number, j: number): string {
+  return `(${i},${j})`;
+}
