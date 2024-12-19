@@ -47,3 +47,20 @@ export function new2DArray<T>(m: number, n: number, supplier: () => T): T[][] {
   }
   return arr;
 }
+
+export function sum(arr: number[]): number {
+  return arr.reduce((acc, curr) => acc + curr, 0);
+}
+
+export function average(arr: number[]): number {
+  return sum(arr) / arr.length;
+}
+
+export function variance(arr: number[]): number {
+  let sum = 0;
+  const avg = average(arr);
+  for (const n of arr) {
+    sum += (n - avg) * (n - avg);
+  }
+  return sum / arr.length;
+}
