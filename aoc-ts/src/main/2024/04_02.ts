@@ -1,11 +1,12 @@
-import { Direction, Point } from "../utils/compass.ts";
-import { to1DArrayString } from "../utils/parsers.ts";
+import { Compass, isBounded } from "../utils/compass.ts";
+import { to2DArrayString } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
+  const grid = to2DArrayString(input);
+
   const pattern1 = "MAS";
   const pattern2 = "SAM";
   let cnt = 0;
-  const grid = to1DArrayString(input);
 
   // sliding window approach
   // for each letter (i,j) in the grid
@@ -14,23 +15,19 @@ export function solve(input: string): number {
       if (grid[i][j] !== "A") {
         continue;
       }
-      const p = new Point(i, j);
 
       // build two words along the diagonal
-      const coords = [
-        [Direction.NORTH_WEST, Direction.SOUTH_EAST],
-        [Direction.NORTH_EAST, Direction.SOUTH_WEST],
+      const dirs = [
+        [Compass.NORTH_WEST, Compass.SOUTH_EAST],
+        [Compass.NORTH_EAST, Compass.SOUTH_WEST],
       ];
 
       let matches = 0;
-      for (const [d1, d2] of coords) {
-        const p1 = new Point(p.x + d1.x, p.y + d1.y);
-        const p2 = new Point(p.x + d2.x, p.y + d2.y);
-        if (
-          0 <= p1.x && p1.x < grid.length && 0 <= p1.y && p1.y < grid[i].length &&
-          0 <= p2.x && p2.x < grid.length && 0 <= p2.y && p2.y < grid[i].length
-        ) {
-          const word = grid[p1.x][p1.y] + grid[i][j] + grid[p2.x][p2.y];
+      for (const [d1, d2] of dirs) {
+        const [px, py] = [i + d1[0], j + d1[1]];
+        const [qx, qy] = [i + d2[0], j + d2[1]];
+        if (isBounded([px, py], grid) && isBounded([qx, qy], grid)) {
+          const word = grid[px][py] + grid[i][j] + grid[qx][qy];
           if (word === pattern1 || word === pattern2) {
             matches += 1;
           }

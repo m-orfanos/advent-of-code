@@ -1,4 +1,4 @@
-import { Direction } from "../utils/compass.ts";
+import { Compass } from "../utils/compass.ts";
 import { hash, to2DMapString } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
@@ -9,13 +9,13 @@ export function solve(input: string): number {
     // 3.2
     let sides = 0;
     for (const corner of [0, 1, 2, 3]) {
-      const d1 = Direction.DIR4[corner];
-      const d2 = Direction.DIR4[(corner + 1) % 4];
-      const d3 = Direction.add(d1, d2);
+      const [tx, ty] = Compass.DIR4[corner];
+      const [ux, uy] = Compass.DIR4[(corner + 1) % 4];
+      const [vx, vy] = [tx + ux, ty + uy];
 
-      const n1 = garden[hash(x + d1.x, y + d1.y)];
-      const n2 = garden[hash(x + d2.x, y + d2.y)];
-      const n3 = garden[hash(x + d3.x, y + d3.y)];
+      const n1 = garden[hash(x + tx, y + ty)];
+      const n2 = garden[hash(x + ux, y + uy)];
+      const n3 = garden[hash(x + vx, y + vy)];
 
       if (
         (n1 !== plant && n2 !== plant) ||
@@ -52,14 +52,14 @@ export function solve(input: string): number {
         area += 1;
         sides += nbSides(x, y, plant);
 
-        for (const d of Direction.DIR4) {
-          const adj = hash(x + d.x, y + d.y);
+        for (const [dx, dy] of Compass.DIR4) {
+          const adj = hash(x + dx, y + dy);
           if (visited[adj] || garden[adj] !== plant) {
             continue;
           }
 
           visited[adj] = true;
-          stk.push([x + d.x, y + d.y]);
+          stk.push([x + dx, y + dy]);
         }
       }
 

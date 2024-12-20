@@ -1,14 +1,18 @@
-export class Direction {
+export type Vector = [number, number];
+export type Complex = [number, number];
+
+export class Compass {
   // main directions
-  static readonly NORTH = new Direction(-1, 0);
-  static readonly EAST = new Direction(0, 1);
-  static readonly SOUTH = new Direction(1, 0);
-  static readonly WEST = new Direction(0, -1);
+  static readonly NORTH: Vector = [-1, 0];
+  static readonly EAST: Vector = [0, 1];
+  static readonly SOUTH: Vector = [1, 0];
+  static readonly WEST: Vector = [0, -1];
+
   // ordinal directions
-  static readonly NORTH_EAST = this.add(this.NORTH, this.EAST);
-  static readonly SOUTH_EAST = this.add(this.SOUTH, this.EAST);
-  static readonly SOUTH_WEST = this.add(this.SOUTH, this.WEST);
-  static readonly NORTH_WEST = this.add(this.NORTH, this.WEST);
+  static readonly NORTH_EAST = add(this.NORTH, this.EAST);
+  static readonly SOUTH_EAST = add(this.SOUTH, this.EAST);
+  static readonly SOUTH_WEST = add(this.SOUTH, this.WEST);
+  static readonly NORTH_WEST = add(this.NORTH, this.WEST);
 
   // main directions
   static readonly DIR4 = [
@@ -29,26 +33,21 @@ export class Direction {
     this.WEST,
     this.NORTH_WEST,
   ];
-
-  x: number;
-  y: number;
-
-  constructor(x: number, y: number) {
-    this.x = x;
-    this.y = y;
-  }
-
-  static add(d1: Direction, d2: Direction) {
-    return new Direction(d1.x + d2.x, d1.y + d2.y);
-  }
 }
 
-export class Point {
-  x: number;
-  y: number;
+function add(u: Vector, v: Vector): Vector {
+  return [u[0] + v[0], u[1] + v[1]];
+}
 
-  constructor(x: number, y: number) {
-    this.x = x;
-    this.y = y;
-  }
+// FIXME: needs clarification
+export function mul(a: [number, number], b: [number, number]): [number, number] {
+  // (a+bi)*(c+di)
+  // ac + adi + bci + (-bd)
+  // (ac-bd) + (ad+bc)i
+  return [(a[0] * b[0]) - (a[1] * b[1]), (a[0] * b[1]) + (a[1] * b[0])];
+}
+
+export function isBounded<T>(p: [number, number], grid: T[][]): boolean {
+  return 0 <= p[0] && p[0] < grid.length &&
+    0 <= p[1] && p[1] < grid[p[0]].length;
 }

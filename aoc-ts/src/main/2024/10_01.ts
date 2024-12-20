@@ -1,4 +1,4 @@
-import { Direction } from "../utils/compass.ts";
+import { Compass, isBounded } from "../utils/compass.ts";
 import { to2DArrayNumeric } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
@@ -15,22 +15,21 @@ export function solve(input: string): number {
 
       const stk = [[i, j, 0]];
       while (stk.length > 0) {
-        const [x, y, n] = stk.pop()!;
-        for (const d of Direction.DIR4) {
-          if (
-            !(0 <= x + d.x && x + d.x < grid.length &&
-              0 <= y + d.y && y + d.y < grid[x + d.x].length)
-          ) {
+        const [px, py, n] = stk.pop()!;
+        for (const [dx, dy] of Compass.DIR4) {
+          const [qx, qy] = [px + dx, py + dy];
+
+          if (!isBounded([qx, qy], grid)) {
             continue;
           }
 
-          if (n + 1 === 9 && grid[x + d.x][y + d.y] === 9) {
+          if (n + 1 === 9 && grid[qx][qy] === 9) {
             if (!trailheads.has(`(${i},${j})`)) {
               trailheads.set(`(${i},${j})`, new Set());
             }
-            trailheads.get(`(${i},${j})`)?.add(`(${x + d.x},${y + d.y})`);
-          } else if (grid[x + d.x][y + d.y] === n + 1) {
-            stk.push([x + d.x, y + d.y, n + 1]);
+            trailheads.get(`(${i},${j})`)?.add(`(${qx},${qy})`);
+          } else if (grid[qx][qy] === n + 1) {
+            stk.push([qx, qy, n + 1]);
           }
         }
       }

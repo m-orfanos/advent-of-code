@@ -1,5 +1,6 @@
 import { to2DArrayString } from "../utils/parsers.ts";
 import { combs } from "../utils/combinations.ts";
+import { isBounded } from "../utils/compass.ts";
 
 export function solve(input: string): number {
   // parse input
@@ -9,24 +10,20 @@ export function solve(input: string): number {
   // find all possible antinode locations
   const antinodes = new Set();
   for (const frequency in antennas) {
-    for (const [[x1, y1], [x2, y2]] of combs(antennas[frequency], 2)) {
+    for (const [[ax, ay], [bx, by]] of combs(antennas[frequency], 2)) {
       // direction vector
-      const [dx, dy] = [x2 - x1, y2 - y1];
+      const [dx, dy] = [bx - ax, by - ay];
 
       // from antenna 1, take step away from antenna 2 following direction vector
-      if (
-        0 <= x1 - dx && x1 - dx < grid.length &&
-        0 <= y1 - dy && y1 - dy < grid[x1 - dx].length
-      ) {
-        antinodes.add(`${x1 - dx}|${y1 - dy}`);
+      const [px, py] = [ax - dx, ay - dy];
+      if (isBounded([px, py], grid)) {
+        antinodes.add(`${px}|${py}`);
       }
 
       // from antenna 2, take step away from antenna 1...
-      if (
-        0 <= x2 + dx && x2 + dx < grid.length &&
-        0 <= y2 + dy && y2 + dy < grid[x2 + dx].length
-      ) {
-        antinodes.add(`${x2 + dx}|${y2 + dy}`);
+      const [qx, qy] = [bx + dx, by + dy];
+      if (isBounded([qx, qy], grid)) {
+        antinodes.add(`${qx}|${qy}`);
       }
     }
   }

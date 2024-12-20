@@ -1,4 +1,4 @@
-import { Direction } from "../utils/compass.ts";
+import { Compass } from "../utils/compass.ts";
 import { hash, to2DMapString } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
@@ -23,8 +23,8 @@ export function solve(input: string): number {
         const [x, y] = stk.pop()!;
         area += 1;
 
-        for (const d of Direction.DIR4) {
-          const adj = hash(x + d.x, y + d.y);
+        for (const [dx, dy] of Compass.DIR4) {
+          const adj = hash(x + dx, y + dy);
           if (garden[adj] !== plant) {
             perimeter += 1;
             continue;
@@ -35,7 +35,7 @@ export function solve(input: string): number {
           }
           visited[adj] = true;
 
-          stk.push([x + d.x, y + d.y]);
+          stk.push([x + dx, y + dy]);
         }
       }
 
