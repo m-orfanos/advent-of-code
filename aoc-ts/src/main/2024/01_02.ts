@@ -1,15 +1,10 @@
-export function solve(input: string): number {
-  const lhs: number[] = [];
-  const rhs: number[] = [];
+import { to2DArrayNumeric } from "../utils/parsers.ts";
 
-  const rows = input.trim().split("\n");
-  for (const row of rows) {
-    const groups = /(\d+)\s+(\d+)/.exec(row)!;
-    const left = groups[1];
-    const right = groups[2];
-    lhs.push(Number.parseInt(left, 10));
-    rhs.push(Number.parseInt(right, 10));
-  }
+export function solve(input: string): number {
+  const grid = to2DArrayNumeric(input, "   ");
+
+  const lhs = grid.map((r) => r[0]);
+  const rhs = grid.map((r) => r[1]);
 
   const counter = rhs.reduce((acc, curr) => ({
     ...acc,

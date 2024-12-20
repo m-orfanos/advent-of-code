@@ -1,25 +1,14 @@
-export function solve(input: string): number {
-  const lhs: number[] = [];
-  const rhs: number[] = [];
+import { sum, zip } from "../utils/arrays.ts";
+import { to2DArrayNumeric } from "../utils/parsers.ts";
 
-  const rows = input.trim().split("\n");
-  for (const row of rows) {
-    const groups = /(\d+)\s+(\d+)/.exec(row)!;
-    const left = groups[1];
-    const right = groups[2];
-    lhs.push(Number.parseInt(left, 10));
-    rhs.push(Number.parseInt(right, 10));
-  }
+export function solve(input: string): number {
+  const grid = to2DArrayNumeric(input, "   ");
+
+  const lhs = grid.map((r) => r[0]);
+  const rhs = grid.map((r) => r[1]);
 
   lhs.sort();
   rhs.sort();
 
-  let distance = 0;
-  for (let i = 0; i < rows.length; i++) {
-    const left = lhs[i];
-    const right = rhs[i];
-    distance += Math.abs(left - right);
-  }
-
-  return distance;
+  return sum(zip(lhs, rhs).map(([l, r]) => Math.abs(l - r)));
 }
