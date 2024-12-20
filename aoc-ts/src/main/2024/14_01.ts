@@ -1,3 +1,4 @@
+import { mod } from "../utils/maths.ts";
 import { to1DArrayString } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
@@ -34,8 +35,8 @@ export function simulate(
     for (const r of robots) {
       const [y, x] = r[0];
       const [vy, vx] = r[1];
-      r[0][0] = (((y + vy) % w) + w) % w;
-      r[0][1] = (((x + vx) % h) + h) % h;
+      r[0][0] = mod(y + vy, w);
+      r[0][1] = mod(x + vx, h);
     }
   }
 }
