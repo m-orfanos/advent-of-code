@@ -35,19 +35,56 @@ export class Compass {
   ];
 }
 
-function add(u: Vector, v: Vector): Vector {
+export function rev(d: [number, number]): [number, number] {
+  return mul(d, [-1, 0]);
+}
+
+export function eq(u: [number, number], v: [number, number]): boolean {
+  return u[0] == v[0] && u[1] == v[1];
+}
+
+export function add(u: [number, number], v: [number, number]): [number, number] {
   return [u[0] + v[0], u[1] + v[1]];
 }
 
-// FIXME: needs clarification
+export function sub(u: [number, number], v: [number, number]): [number, number] {
+  return [u[0] - v[0], u[1] - v[1]];
+}
+
 export function mul(a: [number, number], b: [number, number]): [number, number] {
-  // (a+bi)*(c+di)
-  // ac + adi + bci + (-bd)
-  // (ac-bd) + (ad+bc)i
+  // |  ax |  ay |     |  bx |  by |     |   x |   y | notes                 |
+  // | ---:| ---:| --- | ---:| ---:| --- | ---:| ---:| --------------------- |
+  // |   0 |   1 |     |   0 |   1 |     |  -1 |   0 | 90d counter-clockwise |
+  // |   0 |  -1 |     |   0 |   1 |     |   1 |   0 |                       |
+  // |   1 |   0 |     |   0 |   1 |     |   0 |   1 |                       |
+  // |  -1 |   0 |     |   0 |   1 |     |   0 |  -1 |                       |
+  // |     |     |     |     |     |     |     |     |                       |
+  // |   0 |   1 |     |   0 |  -1 |     |   1 |   0 | 90d clockwise         |
+  // |   0 |  -1 |     |   0 |  -1 |     |  -1 |   0 |                       |
+  // |   1 |   0 |     |   0 |  -1 |     |   0 |  -1 |                       |
+  // |  -1 |   0 |     |   0 |  -1 |     |   0 |   1 |                       |
+  // |     |     |     |     |     |     |     |     |                       |
+  // |   0 |   1 |     |   1 |   0 |     |   0 |   1 | 0d                    |
+  // |   0 |  -1 |     |   1 |   0 |     |   0 |  -1 |                       |
+  // |   1 |   0 |     |   1 |   0 |     |   1 |   0 |                       |
+  // |  -1 |   0 |     |   1 |   0 |     |  -1 |   0 |                       |
+  // |     |     |     |     |     |     |     |     |                       |
+  // |   0 |   1 |     |  -1 |   0 |     |   0 |  -1 | 180d                  |
+  // |   0 |  -1 |     |  -1 |   0 |     |   0 |   1 |                       |
+  // |   1 |   0 |     |  -1 |   0 |     |  -1 |   0 |                       |
+  // |  -1 |   0 |     |  -1 |   0 |     |   1 |  -0 |                       |
   return [(a[0] * b[0]) - (a[1] * b[1]), (a[0] * b[1]) + (a[1] * b[0])];
 }
 
 export function isBounded<T>(p: [number, number], grid: T[][]): boolean {
   return 0 <= p[0] && p[0] < grid.length &&
     0 <= p[1] && p[1] < grid[p[0]].length;
+}
+
+export function h1(a: [number, number]) {
+  return a.join("|");
+}
+
+export function h2(a: [number, number], b: [number, number]) {
+  return [...a, ...b].join("|");
 }
