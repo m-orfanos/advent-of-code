@@ -1,5 +1,5 @@
-import { Compass } from "../utils/compass.ts";
-import { hash, to2DMapString } from "../utils/parsers.ts";
+import { Compass, h1 } from "../utils/compass.ts";
+import { to2DMapString } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
   const [garden, nr, nc] = to2DMapString(input);
@@ -8,7 +8,7 @@ export function solve(input: string): number {
   let price = 0;
   for (let i = 0; i < nr; i++) {
     for (let j = 0; j < nc; j++) {
-      const cur = hash(i, j);
+      const cur = h1([i, j]);
       if (visited[cur]) {
         continue;
       }
@@ -24,7 +24,7 @@ export function solve(input: string): number {
         area += 1;
 
         for (const [dx, dy] of Compass.DIR4) {
-          const adj = hash(x + dx, y + dy);
+          const adj = h1([x + dx, y + dy]);
           if (garden[adj] !== plant) {
             perimeter += 1;
             continue;

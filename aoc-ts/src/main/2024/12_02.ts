@@ -1,5 +1,5 @@
-import { Compass } from "../utils/compass.ts";
-import { hash, to2DMapString } from "../utils/parsers.ts";
+import { Compass, h1 } from "../utils/compass.ts";
+import { to2DMapString } from "../utils/parsers.ts";
 
 export function solve(input: string): number {
   function nbSides(x: number, y: number, plant: string) {
@@ -13,9 +13,9 @@ export function solve(input: string): number {
       const [ux, uy] = Compass.DIR4[(corner + 1) % 4];
       const [vx, vy] = [tx + ux, ty + uy];
 
-      const n1 = garden[hash(x + tx, y + ty)];
-      const n2 = garden[hash(x + ux, y + uy)];
-      const n3 = garden[hash(x + vx, y + vy)];
+      const n1 = garden[h1([x + tx, y + ty])];
+      const n2 = garden[h1([x + ux, y + uy])];
+      const n3 = garden[h1([x + vx, y + vy])];
 
       if (
         (n1 !== plant && n2 !== plant) ||
@@ -33,7 +33,7 @@ export function solve(input: string): number {
   let price = 0;
   for (let i = 0; i < nr; i++) {
     for (let j = 0; j < nc; j++) {
-      const cur = hash(i, j);
+      const cur = h1([i, j]);
       if (visited[cur]) {
         continue;
       }
@@ -53,7 +53,7 @@ export function solve(input: string): number {
         sides += nbSides(x, y, plant);
 
         for (const [dx, dy] of Compass.DIR4) {
-          const adj = hash(x + dx, y + dy);
+          const adj = h1([x + dx, y + dy]);
           if (visited[adj] || garden[adj] !== plant) {
             continue;
           }

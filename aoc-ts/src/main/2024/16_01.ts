@@ -1,35 +1,17 @@
 import { add, Compass, h2, isBounded, mul } from "../utils/compass.ts";
-import { to2DArrayString } from "../utils/parsers.ts";
+import { find, to2DArrayString } from "../utils/parsers.ts";
+import { PriorityQueue } from "../utils/queue.ts";
 
 export function solve(input: string): number {
   // parse input
   const grid = to2DArrayString(input);
-  const { source, target } = findStartAndEnd(grid);
+  const source = find("S", grid)!;
+  const target = find("E", grid)!;
 
   // walk
   const { best } = dijkstra(source, target, grid);
 
   return best;
-}
-
-export function findStartAndEnd(grid: string[][]) {
-  let source: [number, number];
-  let target: [number, number];
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[i].length; j++) {
-      if (grid[i][j] === "S") {
-        source = [i, j];
-        grid[i][j] = ">";
-      } else if (grid[i][j] === "E") {
-        target = [i, j];
-      }
-    }
-  }
-
-  return {
-    source: source!,
-    target: target!,
-  };
 }
 
 export function dijkstra(
@@ -84,34 +66,4 @@ export function dijkstra(
     best,
     dist,
   };
-}
-
-/**
- * Insanely scuffed "priority queue" :D
- */
-export class PriorityQueue<T> {
-  data: [number, T][];
-  isSorted: boolean;
-
-  constructor() {
-    this.data = [];
-    this.isSorted = false;
-  }
-
-  isEmpty(): boolean {
-    return this.data.length === 0;
-  }
-
-  push(priority: number, item: T): void {
-    this.data.push([priority, item]);
-    this.isSorted = false;
-  }
-
-  pop(): T {
-    if (!this.isSorted) {
-      this.data.sort((a, b) => b[0] - a[0]);
-      this.isSorted = true;
-    }
-    return this.data.pop()![1];
-  }
 }

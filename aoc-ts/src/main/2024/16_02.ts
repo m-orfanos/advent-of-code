@@ -1,10 +1,13 @@
-import { to2DArrayString } from "../utils/parsers.ts";
+import { find, to2DArrayString } from "../utils/parsers.ts";
 import { Compass, h1, h2, mul, sub } from "../utils/compass.ts";
-import { dijkstra, findStartAndEnd, PriorityQueue } from "./16_01.ts";
+import { PriorityQueue } from "../utils/queue.ts";
+
+import { dijkstra } from "./16_01.ts";
 
 export function solve(input: string): number {
   const grid = to2DArrayString(input);
-  const { source, target } = findStartAndEnd(grid);
+  const source = find("S", grid)!;
+  const target = find("E", grid)!;
 
   // walk
   const { best, dist } = dijkstra(source, target, grid);

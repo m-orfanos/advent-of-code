@@ -1,3 +1,5 @@
+import { h1 } from "./compass.ts";
+
 /**
  * Converts a string into an array of numbers.
  */
@@ -52,13 +54,20 @@ export function to2DMapString(input: string): [{ [key: string]: string }, number
   const ans: { [key: string]: string } = {};
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
-      ans[hash(i, j)] = grid[i][j];
+      ans[h1([i, j])] = grid[i][j];
     }
   }
 
   return [ans, grid.length, grid[0].length];
 }
 
-export function hash(i: number, j: number): string {
-  return `(${i},${j})`;
+export function find(needle: string, grid: string[][]): [number, number] | null {
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      if (grid[i][j] === needle) {
+        return [i, j];
+      }
+    }
+  }
+  return null;
 }
