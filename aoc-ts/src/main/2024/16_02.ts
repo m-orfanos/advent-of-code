@@ -24,19 +24,19 @@ export function solve(input: string): number {
 
   const visited = new Set();
   while (!q.isEmpty()) {
-    const [u, du, cost] = q.pop();
+    const [u, ud, uc] = q.pop();
     visited.add(h1(u));
 
     const neighbors: [[number, number], [number, number], number][] = [
-      [sub(u, du), du, cost - 1],
-      [u, mul(du, [0, 1]), cost - 1000],
-      [u, mul(du, [0, -1]), cost - 1000],
+      [sub(u, ud), ud, uc - 1],
+      [u, mul(ud, [0, 1]), uc - 1000],
+      [u, mul(ud, [0, -1]), uc - 1000],
     ];
 
-    for (const [v, dv, vc] of neighbors) {
-      if (vc === dist[h2(v, dv)]) {
-        q.push(vc, [v, dv, vc]);
-        dist[h2(v, dv)] = Infinity;
+    for (const [v, vd, vc] of neighbors) {
+      if (vc === dist[h2(v, vd)]) {
+        q.push(vc, [v, vd, vc]);
+        dist[h2(v, vd)] = Infinity;
       }
     }
   }

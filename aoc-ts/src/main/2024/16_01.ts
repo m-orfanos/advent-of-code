@@ -34,24 +34,25 @@ export function dijkstra(
   dist[h2(source, Compass.EAST)] = 0;
 
   // traverse grid
-  const q = new PriorityQueue<[[number, number], [number, number], number]>();
-  q.push(0, [source, Compass.EAST, 0]);
+  const q = new PriorityQueue<[[number, number], [number, number]]>();
+  q.push(0, [source, Compass.EAST]);
   while (!q.isEmpty()) {
-    const [u, du, cost] = q.pop();
+    const [u, ud] = q.pop();
+    const uc = dist[h2(u, ud)];
 
     // step or rotate
     const nodes: [[number, number], [number, number], number][] = [
-      [add(u, du), du, cost + 1], //           step forwards
-      [u, mul(du, [0, 1]), cost + 1000], //    rotate counter-clockwise
-      [u, mul(du, [0, -1]), cost + 1000], //   rotate clockwise
-      //[u, mul(du, [-1, 0]), cost + 2000], // ignored, no point facing backwards
+      [add(u, ud), ud, uc + 1], //           step forwards
+      [u, mul(ud, [0, 1]), uc + 1000], //    rotate counter-clockwise
+      [u, mul(ud, [0, -1]), uc + 1000], //   rotate clockwise
+      //[u, mul(ud, [-1, 0]), uc + 2000], // ignored, no point facing backwards
     ];
 
-    for (const [v, dv, vc] of nodes) {
+    for (const [v, vd, vc] of nodes) {
       const [vx, vy] = v;
-      if (isBounded(v, grid) && grid[vx][vy] !== "#" && vc < dist[h2(v, dv)]) {
-        dist[h2(v, dv)] = vc;
-        q.push(vc, [v, dv, vc]);
+      if (isBounded(v, grid) && grid[vx][vy] !== "#" && vc < dist[h2(v, vd)]) {
+        dist[h2(v, vd)] = vc;
+        q.push(vc, [v, vd]);
       }
     }
   }
