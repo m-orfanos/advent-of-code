@@ -88,3 +88,8 @@ export function h1(a: [number, number]) {
 export function h2(a: [number, number], b: [number, number]) {
   return [...a, ...b].join("|");
 }
+
+export function manhattanDistance(u: [number, number], v: [number, number]) {
+  // https://en.wikipedia.org/wiki/Taxicab_geometry
+  return Math.abs(u[0] - v[0]) + Math.abs(u[1] - v[1]);
+}
