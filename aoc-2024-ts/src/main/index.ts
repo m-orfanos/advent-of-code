@@ -44,7 +44,7 @@ async function main(inputArgs: string[]): Promise<void> {
 }
 
 async function fetchPuzzleInput(day: number): Promise<string> {
-  const resp = await fetch(`https://adventofcode.com/day/${day}/input`, {
+  const resp = await fetch(`https://adventofcode.com/2024/day/${day}/input`, {
     headers: { cookie: `session=${Deno.env.get("AOC_SESSION")}` },
   });
   if (!resp.ok) {
