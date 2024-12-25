@@ -1,5 +1,5 @@
-import { combs } from "./utils/combinations.ts";
-import { isBounded } from "./utils/compass.ts";
+import { combinations } from "./utils/combinations.ts";
+import { isBounded } from "./utils/grid.ts";
 import { to2DArrayString } from "./utils/parsers.ts";
 
 export function solve(input: string): number {
@@ -10,7 +10,7 @@ export function solve(input: string): number {
   // find all possible antinode locations
   const antinodes = new Set();
   for (const frequency in antennas) {
-    for (const [[ax, ay], [bx, by]] of combs(antennas[frequency], 2)) {
+    for (const [[ax, ay], [bx, by]] of combinations(antennas[frequency], 2)) {
       // direction vector
       const [dx, dy] = [bx - ax, by - ay];
 

@@ -1,5 +1,5 @@
-export function combs<T>(arr: T[], k: number): T[][] {
-  const xss = icombs(arr.length, k);
+export function combinations<T>(arr: T[], k: number): T[][] {
+  const xss = _combinations(arr.length, k);
   const ans = [];
   for (const xs of xss) {
     const tmp = [];
@@ -18,7 +18,7 @@ export function combs<T>(arr: T[], k: number): T[][] {
  * - https://stackoverflow.com/questions/127704/algorithm-to-return-all-combinations-of-k-elements-from-n
  * - https://web.archive.org/web/20170325012457/https://msdn.microsoft.com/en-us/library/aa289166.aspx
  */
-export function icombs(n: number, k: number): number[][] {
+function _combinations(n: number, k: number): number[][] {
   function fact(n: number) {
     if (mfacts[n]) {
       return mfacts[n];
@@ -31,7 +31,7 @@ export function icombs(n: number, k: number): number[][] {
     return ans;
   }
 
-  function combs(n: number, k: number) {
+  function comb(n: number, k: number) {
     if (n < k) {
       return 0;
     }
@@ -64,13 +64,13 @@ export function icombs(n: number, k: number): number[][] {
   for (let j = 0; j < k; j++) {
     const curr = [];
     for (let i = 0; i < n; i++) {
-      curr.push(combs(i, j + 1));
+      curr.push(comb(i, j + 1));
     }
     mtbl.push(curr);
   }
 
   let i = 0;
-  const max = combs(n, k);
+  const max = comb(n, k);
   const ans = [];
   while (i < max) {
     let curr = i;

@@ -1,5 +1,5 @@
 import { new2DArray } from "./utils/arrays.ts";
-import { aStar } from "./utils/astar.ts";
+import { aStar } from "./utils/grid.ts";
 import { to2DArrayNumeric } from "./utils/parsers.ts";
 
 export function solve(input: string): [number, number] {

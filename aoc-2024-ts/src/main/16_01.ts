@@ -1,4 +1,5 @@
-import { add, Compass, h2, isBounded, mul } from "./utils/compass.ts";
+import { add, Compass, mul } from "./utils/compass.ts";
+import { h2, isBounded } from "./utils/grid.ts";
 import { find, to2DArrayString } from "./utils/parsers.ts";
 import { PriorityQueue } from "./utils/queue.ts";
 

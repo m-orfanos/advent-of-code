@@ -1,4 +1,4 @@
-import { h1 } from "./compass.ts";
+import { h1 } from "./grid.ts";
 
 /**
  * Converts a string into an array of numbers.

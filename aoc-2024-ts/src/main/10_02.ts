@@ -1,4 +1,5 @@
-import { Compass, isBounded } from "./utils/compass.ts";
+import { Compass } from "./utils/compass.ts";
+import { isBounded } from "./utils/grid.ts";
 import { to2DArrayNumeric } from "./utils/parsers.ts";
 
 export function solve(input: string): number {

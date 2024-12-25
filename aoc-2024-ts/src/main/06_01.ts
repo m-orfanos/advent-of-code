@@ -1,5 +1,6 @@
 import { new2DArray } from "./utils/arrays.ts";
-import { isBounded, mul } from "./utils/compass.ts";
+import { mul } from "./utils/compass.ts";
+import { isBounded } from "./utils/grid.ts";
 import { to2DArrayString } from "./utils/parsers.ts";
 
 export function solve(input: string): number {

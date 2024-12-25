@@ -1,4 +1,4 @@
-import { Compass, Vector } from "./utils/compass.ts";
+import { Compass } from "./utils/compass.ts";
 
 export function solve(input: string): number {
   // parse input
@@ -85,7 +85,7 @@ function parse(input: string) {
   }
 
   // parse moves
-  const tmoves: Vector[][] = [];
+  const tmoves: [number, number][][] = [];
   while (i < rows.length) {
     const c = rows[i].trim();
     if (c.length === 0) {

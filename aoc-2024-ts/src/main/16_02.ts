@@ -1,5 +1,6 @@
 import { traverse } from "./16_01.ts";
-import { Compass, h1, h2, mul, sub } from "./utils/compass.ts";
+import { Compass, mul, sub } from "./utils/compass.ts";
+import { h1, h2 } from "./utils/grid.ts";
 import { find, to2DArrayString } from "./utils/parsers.ts";
 import { PriorityQueue } from "./utils/queue.ts";
 

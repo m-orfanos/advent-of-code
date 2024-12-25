@@ -1,12 +1,9 @@
-export type Vector = [number, number];
-export type Complex = [number, number];
-
 export class Compass {
   // main directions
-  static readonly NORTH: Vector = [-1, 0];
-  static readonly EAST: Vector = [0, 1];
-  static readonly SOUTH: Vector = [1, 0];
-  static readonly WEST: Vector = [0, -1];
+  static readonly NORTH: [number, number] = [-1, 0];
+  static readonly EAST: [number, number] = [0, 1];
+  static readonly SOUTH: [number, number] = [1, 0];
+  static readonly WEST: [number, number] = [0, -1];
 
   // ordinal directions
   static readonly NORTH_EAST = add(this.NORTH, this.EAST);
@@ -74,22 +71,4 @@ export function mul(a: [number, number], b: [number, number]): [number, number] 
   // |   1 |   0 |     |  -1 |   0 |     |  -1 |   0 |                       |
   // |  -1 |   0 |     |  -1 |   0 |     |   1 |  -0 |                       |
   return [(a[0] * b[0]) - (a[1] * b[1]), (a[0] * b[1]) + (a[1] * b[0])];
-}
-
-export function isBounded<T>(p: [number, number], grid: T[][]): boolean {
-  return 0 <= p[0] && p[0] < grid.length &&
-    0 <= p[1] && p[1] < grid[p[0]].length;
-}
-
-export function h1(a: [number, number]) {
-  return a.join("|");
-}
-
-export function h2(a: [number, number], b: [number, number]) {
-  return [...a, ...b].join("|");
-}
-
-export function manhattanDistance(u: [number, number], v: [number, number]) {
-  // https://en.wikipedia.org/wiki/Taxicab_geometry
-  return Math.abs(u[0] - v[0]) + Math.abs(u[1] - v[1]);
 }

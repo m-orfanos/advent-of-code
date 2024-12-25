@@ -1,4 +1,5 @@
-import { Compass, h1 } from "./utils/compass.ts";
+import { Compass } from "./utils/compass.ts";
+import { h1 } from "./utils/grid.ts";
 import { to2DMapString } from "./utils/parsers.ts";
 
 export function solve(input: string): number {
