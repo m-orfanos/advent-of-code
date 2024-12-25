@@ -25,15 +25,22 @@ export function dijkstra<T>(
   grid: T[][],
 ) {
   // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
-  // Note: there could be many "best" paths, but here
-  // we simply return the first one discovered
-  function reconstructPath(current: [number, number]) {
-    const path = [current];
-    while (prev[h1(current)]) {
-      current = prev[h1(current)];
-      path.push(current);
+  function reconstructPaths() {
+    const paths = [];
+    const stk = [[target]];
+    while (stk.length > 0) {
+      const tpath = stk.pop()!;
+      const n = tpath[tpath.length - 1];
+      if (eq(n, source)) {
+        paths.push(tpath);
+        continue;
+      }
+      for (const m of prev[h1(n)]) {
+        stk.push([...tpath, m]);
+      }
     }
-    return path;
+
+    return paths;
   }
 
   function d(_u: [number, number], _v: [number, number]): number {
@@ -76,7 +83,7 @@ export function dijkstra<T>(
   }
   dist[h1(source)] = 0;
 
-  const prev: { [key: string]: [number, number] } = {};
+  const prev: { [key: string]: [number, number][] } = {};
 
   // traverse grid
   const q = new Heap<[number, [number, number]]>((a, b) => a[0] - b[0]);
@@ -84,21 +91,22 @@ export function dijkstra<T>(
   while (!q.isEmpty()) {
     const [_, u] = q.pop()!;
 
-    if (eq(u, target)) {
-      return reconstructPath(target);
-    }
-
     for (const v of neighbors(u)) {
       const alt = dist[h1(u)] + d(u, v);
       if (alt < dist[h1(v)]) {
-        prev[h1(v)] = u;
+        prev[h1(v)] = [u];
         dist[h1(v)] = alt;
         q.push([alt, v]);
+      } else if (alt == dist[h1(v)]) {
+        if (!prev[h1(v)]) {
+          prev[h1(v)] = [];
+        }
+        prev[h1(v)].push(u);
       }
     }
   }
 
-  return [];
+  return reconstructPaths();
 }
 
 export function aStar<T>(

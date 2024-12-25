@@ -14,7 +14,7 @@ export function nbCheats(
   const start = find("S", grid)!;
   const end = find("E", grid)!;
 
-  const path = dijkstra(start, end, grid);
+  const path = dijkstra(start, end, grid)[0];
 
   // the ONLY reason this works is because the programs
   // MUST be back on the normal track again after a cheat
