@@ -1,4 +1,4 @@
-import { dijkstra } from "./16_01.ts";
+import { traverse } from "./16_01.ts";
 import { Compass, h1, h2, mul, sub } from "./utils/compass.ts";
 import { find, to2DArrayString } from "./utils/parsers.ts";
 import { PriorityQueue } from "./utils/queue.ts";
@@ -9,7 +9,7 @@ export function solve(input: string): number {
   const target = find("E", grid)!;
 
   // walk
-  const { best, dist } = dijkstra(source, target, grid);
+  const { best, dist } = traverse(source, target, grid);
 
   // find all tiles part of the shortest path(s)
   // start from target and traverse backwards

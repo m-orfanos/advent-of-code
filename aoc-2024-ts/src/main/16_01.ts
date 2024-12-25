@@ -9,12 +9,12 @@ export function solve(input: string): number {
   const target = find("E", grid)!;
 
   // walk
-  const { best } = dijkstra(source, target, grid);
+  const { best } = traverse(source, target, grid);
 
   return best;
 }
 
-export function dijkstra(
+export function traverse(
   source: [number, number],
   target: [number, number],
   grid: string[][],

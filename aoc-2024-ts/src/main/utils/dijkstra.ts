@@ -1,22 +1,20 @@
 import { Heap } from "npm:heap-js";
-import { add, Compass, eq, h1, isBounded, manhattanDistance } from "./compass.ts";
+import { add, Compass, eq, h1, isBounded } from "./compass.ts";
 
-export function aStar<T>(
-  start: [number, number],
-  goal: [number, number],
+export function dijkstra<T>(
+  source: [number, number],
+  target: [number, number],
   grid: T[][],
 ) {
+  // Note: there could be many "best" paths, but here
+  // we simply return the first one discovered
   function reconstructPath(current: [number, number]) {
     const path = [current];
-    while (from[h1(current)]) {
-      current = from[h1(current)];
+    while (prev[h1(current)]) {
+      current = prev[h1(current)];
       path.push(current);
     }
     return path;
-  }
-
-  function h(u: [number, number], v: [number, number]): number {
-    return manhattanDistance(u, v);
   }
 
   function d(_u: [number, number], _v: [number, number]): number {
@@ -39,7 +37,7 @@ export function aStar<T>(
 
   // used to check bounds/obstacle check in neighbors function
   let obstacle: string | number;
-  switch (typeof grid[start[0]][start[1]]) {
+  switch (typeof grid[source[0]][source[1]]) {
     case "number":
       obstacle = Infinity;
       break;
@@ -50,38 +48,33 @@ export function aStar<T>(
       throw Error(`Type not supported`);
   }
 
-  const from: { [key: string]: [number, number] } = {};
-
-  const gScore: { [key: string]: number } = {};
+  // init distances
+  const dist: { [key: string]: number } = {};
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
-      gScore[h1([i, j])] = Infinity;
+      dist[h1([i, j])] = Infinity;
     }
   }
-  gScore[h1(start)] = 0;
+  dist[h1(source)] = 0;
 
-  const open = new Set();
-  open.add(h1(start));
+  const prev: { [key: string]: [number, number] } = {};
 
+  // traverse grid
   const q = new Heap<[number, [number, number]]>((a, b) => a[0] - b[0]);
-  q.add([h(start, goal), start]);
+  q.push([0, source]);
   while (!q.isEmpty()) {
-    const [_, current] = q.pop()!;
-    open.delete(h1(current));
+    const [_, u] = q.pop()!;
 
-    if (eq(current, goal)) {
-      return reconstructPath(current);
+    if (eq(u, target)) {
+      return reconstructPath(target);
     }
 
-    for (const neighbor of neighbors(current)) {
-      const cost = gScore[h1(current)] + d(current, neighbor);
-      if (cost < gScore[h1(neighbor)]) {
-        from[h1(neighbor)] = current;
-        gScore[h1(neighbor)] = cost;
-        if (!open.has(h1(neighbor))) {
-          open.add(h1(neighbor));
-          q.push([cost + h(current, neighbor), neighbor]);
-        }
+    for (const v of neighbors(u)) {
+      const alt = dist[h1(u)] + d(u, v);
+      if (alt < dist[h1(v)]) {
+        prev[h1(v)] = u;
+        dist[h1(v)] = alt;
+        q.push([alt, v]);
       }
     }
   }
