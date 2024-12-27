@@ -64,3 +64,7 @@ export function variance(arr: number[]): number {
   }
   return sum / arr.length;
 }
+
+export function range(n: number) {
+  return [...Array(n).keys()];
+}
