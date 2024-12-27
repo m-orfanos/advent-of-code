@@ -1,15 +1,38 @@
 import { zip } from "./utils/arrays.ts";
 import { eq, sub } from "./utils/compass.ts";
 import { dijkstra } from "./utils/grid.ts";
+import { to1DArrayString } from "./utils/parsers.ts";
 
 export function solve(input: string): number {
   const mkeypad: { [key: string]: string[] } = buildKeyPadMap();
-  console.log(mkeypad);
+  const mdpad = buildDirectionalPadMap();
 
-  // level 1 check
-  const code = "029A";
+  let sum = 0;
+  const codes = to1DArrayString(input).map(r => r.trim());
+  for (const code of codes) {
+    let min = Infinity;
+    const moves1: string[] = buildMoves(code, mkeypad);
+    for (const move1 of moves1) {
+      const moves2 = buildMoves(move1, mdpad);
+      for (const move2 of moves2) {
+        const moves3 = buildMoves(move2, mdpad);
+        for (const move3 of moves3) {
+          if (move3.length < min) {
+            min = move3.length;
+          }
+        }
+      }
+    }
+
+    sum += Number.parseInt(code, 10) * min;
+  }
+
+  return sum;
+}
+
+function buildMoves(code: string, mkeypad: { [key: string]: string[]; }) {
   let moves: string[] = [""];
-  for (const [a, b] of zip("A029A".split(""), "029A".split(""))) {
+  for (const [a, b] of zip(`A${code}`.split(""), code.split(""))) {
     let next: string[] = [];
     for (const move of moves) {
       for (const sub of mkeypad[`${a}|${b}`]) {
@@ -19,12 +42,7 @@ export function solve(input: string): number {
     moves = next;
     next = [];
   }
-
-  for (const move of moves) {
-    console.log(code, move);
-  }
-
-  return -1;
+  return moves;
 }
 
 function buildDirectionalPadMap() {
@@ -33,14 +51,7 @@ function buildDirectionalPadMap() {
     ["<", "v", ">"],
   ];
 
-  const coords: [number, number][] = [];
-  for (let i = 0; i < pad.length; i++) {
-    for (let j = 0; j < pad[i].length; j++) {
-      if (pad[i][j] !== "#") {
-        coords.push([i, j]);
-      }
-    }
-  }
+  return buildMap(pad);
 }
 
 function buildKeyPadMap() {
@@ -51,6 +62,10 @@ function buildKeyPadMap() {
     ["#", "0", "A"],
   ];
 
+  return buildMap(pad);
+}
+
+function buildMap(pad: string[][]) {
   const coords: [number, number][] = [];
   for (let i = 0; i < pad.length; i++) {
     for (let j = 0; j < pad[i].length; j++) {
@@ -60,7 +75,7 @@ function buildKeyPadMap() {
     }
   }
 
-  const mpad: { [key: string]: string[] } = {};
+  const mpad: { [key: string]: string[]; } = {};
   for (let i = 0; i < coords.length; i++) {
     for (let j = 0; j < coords.length; j++) {
       const p = coords[i];
