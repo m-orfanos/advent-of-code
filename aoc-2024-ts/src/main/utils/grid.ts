@@ -32,7 +32,7 @@ export function dijkstra<T>(
       const tpath = stk.pop()!;
       const n = tpath[tpath.length - 1];
       if (eq(n, source)) {
-        paths.push(tpath);
+        paths.push(tpath.reverse());
         continue;
       }
       for (const m of prev[h1(n)]) {
