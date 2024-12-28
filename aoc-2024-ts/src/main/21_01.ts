@@ -8,29 +8,39 @@ export function solve(input: string): number {
   const mdpad = buildDirectionalPadMap();
 
   let sum = 0;
-  const codes = to1DArrayString(input).map(r => r.trim());
+  const codes = to1DArrayString(input).map((r) => r.trim());
   for (const code of codes) {
-    let min = Infinity;
+    let min1 = Infinity;
+    let min2 = Infinity;
+    let min3 = Infinity;
     const moves1: string[] = buildMoves(code, mkeypad);
     for (const move1 of moves1) {
+      if (move1.length > min1) {
+        continue;
+      }
       const moves2 = buildMoves(move1, mdpad);
       for (const move2 of moves2) {
+        if (move2.length > min2) {
+          continue;
+        }
         const moves3 = buildMoves(move2, mdpad);
         for (const move3 of moves3) {
-          if (move3.length < min) {
-            min = move3.length;
+          if (move3.length < min3) {
+            min1 = move1.length;
+            min2 = move2.length;
+            min3 = move3.length;
           }
         }
       }
     }
 
-    sum += Number.parseInt(code, 10) * min;
+    sum += Number.parseInt(code, 10) * min3;
   }
 
   return sum;
 }
 
-function buildMoves(code: string, mkeypad: { [key: string]: string[]; }) {
+function buildMoves(code: string, mkeypad: { [key: string]: string[] }) {
   let moves: string[] = [""];
   for (const [a, b] of zip(`A${code}`.split(""), code.split(""))) {
     let next: string[] = [];
@@ -75,7 +85,7 @@ function buildMap(pad: string[][]) {
     }
   }
 
-  const mpad: { [key: string]: string[]; } = {};
+  const mpad: { [key: string]: string[] } = {};
   for (let i = 0; i < coords.length; i++) {
     for (let j = 0; j < coords.length; j++) {
       const p = coords[i];
