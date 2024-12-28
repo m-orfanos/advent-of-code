@@ -1,40 +1,47 @@
-import { zip } from "./utils/arrays.ts";
+import { Heap } from "npm:heap-js";
+
+import { new1DArray, zip } from "./utils/arrays.ts";
 import { eq, sub } from "./utils/compass.ts";
 import { dijkstra } from "./utils/grid.ts";
 import { to1DArrayString } from "./utils/parsers.ts";
 
 export function solve(input: string): number {
+  const codes = to1DArrayString(input).map((r) => r.trim());
   const mkeypad: { [key: string]: string[] } = buildKeyPadMap();
   const mdpad = buildDirectionalPadMap();
 
-  let sum = 0;
-  const codes = to1DArrayString(input).map((r) => r.trim());
-  for (const code of codes) {
-    let min1 = Infinity;
-    let min2 = Infinity;
-    let min3 = Infinity;
-    const moves1: string[] = buildMoves(code, mkeypad);
-    for (const move1 of moves1) {
-      if (move1.length > min1) {
-        continue;
-      }
-      const moves2 = buildMoves(move1, mdpad);
-      for (const move2 of moves2) {
-        if (move2.length > min2) {
-          continue;
-        }
-        const moves3 = buildMoves(move2, mdpad);
-        for (const move3 of moves3) {
-          if (move3.length < min3) {
-            min1 = move1.length;
-            min2 = move2.length;
-            min3 = move3.length;
-          }
-        }
+  const cnt = 3 + 1;
+
+  const mlens = codes.reduce((acc, c) => ({
+    ...acc,
+    [c]: new1DArray(cnt, () => Infinity),
+  }), {} as Record<string, number[]>);
+
+  const q = new Heap<[number, string, string, number[]]>((a, b) => b[0] - a[0]);
+  codes.forEach((c) => {
+    q.push([0, c, c, new1DArray(cnt, () => Infinity)]);
+  });
+
+  while (q.length > 0) {
+    const [clvl, cmove, ccode, clens] = q.pop()!;
+    if (cmove.length > mlens[ccode][clvl]) {
+      continue;
+    }
+    clens[clvl] = cmove.length;
+
+    if (clvl == cnt - 1) {
+      mlens[ccode] = clens;
+    } else {
+      const nmoves = buildMoves(cmove, clvl == 0 ? mkeypad : mdpad);
+      for (const nmove of nmoves) {
+        q.push([clvl + 1, nmove, ccode, clens]);
       }
     }
+  }
 
-    sum += Number.parseInt(code, 10) * min3;
+  let sum = 0;
+  for (const code of codes) {
+    sum += Number.parseInt(code, 10) * mlens[code][cnt - 1];
   }
 
   return sum;
